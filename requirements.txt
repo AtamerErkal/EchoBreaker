@@ -1,0 +1,10 @@
+yt-dlp
+openai-whisper
+ollama
+torch
+setuptools-rust
+python-dotenv
+pydantic
+ffmpeg-python
+fastapi
+uvicorn

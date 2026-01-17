@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.mp4
+*.mp3
+*.wav
+models/whisper/
+.env
+outputs/
+
+# Binary files
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
+*.exe
