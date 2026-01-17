@@ -14,22 +14,25 @@ class YouTubeDownloader:
         Truncates to the first 300 seconds.
         Returns the absolute path to the downloaded file.
         """
+        # Get absolute path to project root where ffmpeg is located
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(self.output_dir, '%(id)s.%(ext)s'),
-            'ffmpeg_location': '.',
+            'ffmpeg_location': project_root,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'wav',
                 'preferredquality': '192',
             }],
             'postprocessor_args': [
-                '-ac', '1',          # Mono
-                '-ar', '16000',      # 16kHz
+                '-ar', '16000',      # 16kHz sample rate
+                '-ac', '1',          # Mono channel
                 '-t', '300'          # Truncate to 300 seconds
             ],
-            'quiet': True,
-            'overwrites': True,
+            'quiet': False,
+            'no_warnings': False,
         }
 
         try:
