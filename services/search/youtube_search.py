@@ -19,7 +19,8 @@ class SearchService:
             'quiet': True,
             'default_search': 'ytsearch',
             'noplaylist': True,
-            'extract_flat': True, # We only need metadata, not download
+            'skip_download': True,  # Don't download, just extract metadata
+            'format': 'bestaudio/best',
         }
 
         loop = asyncio.get_running_loop()
