@@ -8,3 +8,5 @@ pydantic
 ffmpeg-python
 fastapi
 uvicorn
+streamlit
+requests
