@@ -51,52 +51,49 @@ async def analyze_video(request: AnalyzeRequest, background_tasks: BackgroundTas
         result = reasoner.generate_analysis(transcript, request.video_url)
         
         # 4. Search for Counter-Argument Videos with Dual-Pass Verification
-        print("Searching for suggested videos with relevance verification...")
+        # 4. Search for Counter-Argument Videos (Parallel Execution)
+        print("Searching for suggested videos with relevance verification (Parallel)...")
         if not searchER:
              print("Warning: SearchService not initialized")
         else:
-            for argument in result.counter_arguments:
-                if argument.youtube_query:
+            import asyncio
+
+            async def process_counter_argument(argument):
+                if not argument.youtube_query:
+                    return
+
+                try:
                     print(f"Searching for: {argument.youtube_query}")
-                    try:
-                        # Search for more videos than needed (will filter by relevance)
-                        suggestions = await searchER.search_videos(argument.youtube_query, limit=5)
-                        print(f"Found {len(suggestions)} videos for query '{argument.youtube_query}'")
+                    # Search for candidates (limit=1 for maximum speed < 60s target)
+                    suggestions = await searchER.search_videos(argument.youtube_query, limit=1)
+                    
+                    verified_videos = []
+                    for video in suggestions:
+                        # Verify relevance (Blocking call, but acceptable for local LLM text processing)
+                        verification = reasoner.verify_relevance(
+                            counter_argument_content=argument.content,
+                            video_title=video.title,
+                            video_description=video.description or ""
+                        )
                         
-                        # Dual-Pass Verification: Check relevance of each video
-                        verified_videos = []
-                        for video in suggestions:
-                            print(f"  Verifying: {video.title[:60]}...")
-                            
-                            verification = reasoner.verify_relevance(
-                                counter_argument_content=argument.content,
-                                video_title=video.title,
-                                video_description=video.description or ""
-                            )
-                            
-                            relevance_score = verification.get('score', 0.5)
-                            verdict = verification.get('verdict', 'reject')
-                            reason = verification.get('reason', '')
-                            
-                            print(f"    Score: {relevance_score:.2f} | Verdict: {verdict} | {reason}")
-                            
-                            # Only accept videos with score >= 0.7
-                            if verdict == 'accept' and relevance_score >= 0.7:
-                                video.relevance_score = relevance_score
-                                verified_videos.append(video)
-                            else:
-                                print(f"    ❌ Rejected: Low relevance")
+                        relevance_score = verification.get('score', 0.5)
+                        verdict = verification.get('verdict', 'reject')
+                        reason = verification.get('reason', '')
                         
-                        # Keep top 2 verified videos
-                        verified_videos.sort(key=lambda v: v.relevance_score or 0, reverse=True)
-                        argument.suggested_videos = verified_videos[:2]
-                        
-                        print(f"  ✅ Accepted {len(argument.suggested_videos)} videos after verification")
-                        
-                    except Exception as sx:
-                        print(f"Search/verification failed for {argument.youtube_query}: {sx}")
-                        import traceback
-                        traceback.print_exc()
+                        if verdict == 'accept' and relevance_score >= 0.7:
+                            video.relevance_score = relevance_score
+                            verified_videos.append(video)
+                    
+                    # Keep ONLY the TOP 1 verified video
+                    verified_videos.sort(key=lambda v: v.relevance_score or 0, reverse=True)
+                    argument.suggested_videos = verified_videos[:1]
+                    print(f"  ✅ Argument '{argument.type}': Found {len(argument.suggested_videos)} verified video(s)")
+
+                except Exception as sx:
+                    print(f"Search failed for {argument.youtube_query}: {sx}")
+
+            # Run all searches concurrently
+            await asyncio.gather(*(process_counter_argument(arg) for arg in result.counter_arguments))
         
         
         return result

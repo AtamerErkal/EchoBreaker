@@ -456,26 +456,7 @@ with col1:
 with col2:
     analyze_button = st.button("🔍 Analyze", use_container_width=True)
 
-# Advanced options
-with st.expander("⚙️ Advanced Options"):
-    col1, col2 = st.columns(2)
-    with col1:
-        relevance_threshold = st.slider(
-            "Relevance Threshold",
-            min_value=0.5,
-            max_value=1.0,
-            value=0.7,
-            step=0.05,
-            help="Minimum relevance score for suggested videos"
-        )
-    with col2:
-        max_videos_per_arg = st.number_input(
-            "Max Videos per Argument",
-            min_value=1,
-            max_value=5,
-            value=2,
-            help="Maximum number of videos to show per counter-argument"
-        )
+
 
 # =============================================================================
 # ANALYSIS LOGIC
@@ -760,97 +741,82 @@ if analyze_button:
                         </div>
                         """, unsafe_allow_html=True)
                         
-                        # Video Suggestions Grid with Enhanced Cards
-                        suggested_videos = counter.get('suggested_videos', [])
+                        # =============================================================================
+                        # V2.2 HYBRID LAYOUT: VIDEO + ACADEMIC TEXT
+                        # =============================================================================
                         
-                        if suggested_videos:
-                            st.markdown("#### 🎥 Verified Video Sources")
-                            st.caption(f"_Search query: \"{counter.get('youtube_query', 'N/A')}_\"")
+                        suggested_videos = counter.get('suggested_videos', [])
+                        academic_text = counter.get('academic_insight', "Academic perspective generating...")
+                        import html # Import globally for this block
+                        
+                        # 2-Column Split
+                        h_col1, h_col2 = st.columns([1, 1], gap="medium")
+                        
+                        # --- LEFT COLUMN: TOP VIDEO SOURCE ---
+                        with h_col1:
+                            st.markdown("#### 📺 Verified Video Source")
+                            if suggested_videos:
+                                video = suggested_videos[0] # Take top 1
+                                
+                                # Metadata Calculation
+                                relevance = video.get('relevance_score', 0.5)
+                                if relevance >= 0.85:
+                                    badge_class, badge_text = "relevance-high", "HIGH"
+                                elif relevance >= 0.7:
+                                    badge_class, badge_text = "relevance-medium", "GOOD"
+                                else:
+                                    badge_class, badge_text = "relevance-low", "LOW"
+                                
+                                # Duration & Views
+                                duration = video.get('duration')
+                                if duration:
+                                    mins, secs = divmod(duration, 60)
+                                    hours, mins = divmod(mins, 60)
+                                    duration_str = f"{hours}:{mins:02d}:{secs:02d}" if hours > 0 else f"{mins}:{secs:02d}"
+                                else:
+                                    duration_str = "N/A"
+                                
+                                views = video.get('view_count', 0)
+                                if views >= 1000000: views_str = f"{views/1000000:.1f}M"
+                                elif views >= 1000: views_str = f"{views/1000:.1f}K"
+                                else: views_str = str(views)
+                                
+                                thumbnail_url = video.get('thumbnail', '')
+                                channel = video.get('channel_name', 'Unknown Channel')
+
+                                # Render Card (Construct HTML first to ensure valid DOM)
+                                safe_title = html.escape(video.get('title', 'Untitled Video'))
+                                safe_channel = html.escape(channel)
+                                safe_badge_text = html.escape(badge_text)
+                                safe_views_str = html.escape(views_str)
+                                safe_duration_str = html.escape(duration_str)
+                                
+                                card_html = f'<div class="video-card">'
+                                
+                                if thumbnail_url:
+                                    # Ensure URL is safe (basic check, usually fine from youtube)
+                                    safe_thumb = thumbnail_url.replace('"', '&quot;')
+                                    card_html += f"""<div class="video-thumbnail-container"><img src="{safe_thumb}" class="video-thumbnail" alt="Video thumbnail"><div class="relevance-badge {badge_class}">✓ {safe_badge_text}</div><div class="video-metadata-overlay"><span>⏱️ {safe_duration_str}</span><span>👁️ {safe_views_str} views</span></div></div>"""
+                                
+                                card_html += f"""<div class="video-content"><div class="video-title">{safe_title}</div><div class="video-channel">📺 {safe_channel}</div><div class="video-stats">Relevance Score: {relevance * 100:.0f}%</div><a href="{video.get('url', '#')}" target="_blank" class="video-link">▶️ Watch Now</a></div></div>"""
+                                
+                                st.markdown(card_html, unsafe_allow_html=True)
+                                
+                            else:
+                                st.info("⚠️ No high-quality video source found for this specific angle.")
+
+                        # --- RIGHT COLUMN: ACADEMIC INSIGHT ---
+                        with h_col2:
+                            st.markdown("#### 🏛️ Academic Perspective")
                             
-                            cols = st.columns(min(len(suggested_videos), 3))
-                            for idx, video in enumerate(suggested_videos[:max_videos_per_arg]):
-                                with cols[idx % 3]:
-                                    # Calculate relevance badge
-                                    relevance = video.get('relevance_score', 0.5)
-                                    if relevance >= 0.85:
-                                        badge_class = "relevance-high"
-                                        badge_text = "HIGH"
-                                    elif relevance >= 0.7:
-                                        badge_class = "relevance-medium"
-                                        badge_text = "GOOD"
-                                    else:
-                                        badge_class = "relevance-low"
-                                        badge_text = "LOW"
-                                    
-                                    # Format duration
-                                    duration = video.get('duration')
-                                    if duration:
-                                        mins, secs = divmod(duration, 60)
-                                        hours, mins = divmod(mins, 60)
-                                        if hours > 0:
-                                            duration_str = f"{hours}:{mins:02d}:{secs:02d}"
-                                        else:
-                                            duration_str = f"{mins}:{secs:02d}"
-                                    else:
-                                        duration_str = "N/A"
-                                    
-                                    # Format view count
-                                    views = video.get('view_count', 0)
-                                    if views >= 1000000:
-                                        views_str = f"{views/1000000:.1f}M"
-                                    elif views >= 1000:
-                                        views_str = f"{views/1000:.1f}K"
-                                    else:
-                                        views_str = str(views)
-                                    
-                                    thumbnail_url = video.get('thumbnail', '')
-                                    
-                                    # Video card
-                                    st.markdown('<div class="video-card">', unsafe_allow_html=True)
-                                    
-                                    if thumbnail_url:
-                                        st.markdown(f"""
-                                        <div class="video-thumbnail-container">
-                                            <img src="{thumbnail_url}" class="video-thumbnail" alt="Video thumbnail">
-                                            <div class="relevance-badge {badge_class}">
-                                                ✓ {badge_text}
-                                            </div>
-                                            <div class="video-metadata-overlay">
-                                                <span>⏱️ {duration_str}</span>
-                                                <span>👁️ {views_str} views</span>
-                                            </div>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                    
-                                    channel = video.get('channel_name', 'Unknown Channel')
-                                    
-                                    st.markdown(f"""
-                                    <div class="video-content">
-                                        <div class="video-title">{video.get('title', 'Untitled Video')}</div>
-                                        <div class="video-channel">📺 {channel}</div>
-                                        <div class="video-stats">Relevance Score: {relevance * 100:.0f}%</div>
-                                        <a href="{video.get('url', '#')}" target="_blank" class="video-link">
-                                            ▶️ Watch Now
-                                        </a>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-                                    
-                                    st.markdown('</div>', unsafe_allow_html=True)
-                                    
-                                    # "Why this video?" expandable section
-                                    with st.expander("💡 Why this video?"):
-                                        st.markdown(f"""
-                                        **Relevance Analysis:**
-                                        - **Score:** {relevance * 100:.0f}% match to counter-argument
-                                        - **Channel:** {channel}
-                                        - **Views:** {views:,} ({views_str})
-                                        - **Duration:** {duration_str}
-                                        
-                                        This video was selected through dual-pass AI verification to ensure it provides 
-                                        substantive content related to the {counter.get('type', 'counter')} perspective.
-                                        """)
-                        else:
-                            st.caption("_No verified video sources found for this perspective_")
+                            safe_academic_text = html.escape(academic_text)
+                            safe_query = html.escape(counter.get('youtube_query', 'N/A'))
+                            
+                            # Compact HTML to prevent markdown code block rendering
+                            academic_html = f"""<div style="background: var(--slate-800); border: 1px solid var(--slate-700); border-radius: 0.75rem; padding: 1.5rem; height: 100%; border-left: 4px solid var(--blue);"><div style="color: var(--text-secondary); font-style: italic; font-size: 1.05rem; line-height: 1.8; margin-bottom: 1rem;">"{safe_academic_text}"</div><div style="display: flex; gap: 0.75rem; flex-wrap: wrap;"><span style="background: var(--slate-700); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; color: var(--text-primary);">🔬 Research Theory</span><span style="background: var(--slate-700); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; color: var(--text-primary);">🎓 Verified Context</span></div></div>"""
+                            st.markdown(academic_html, unsafe_allow_html=True)
+                            
+                            st.caption(f"_Search Query: \"{safe_query}\"_")
                         
                         st.markdown("<br>", unsafe_allow_html=True)
                 

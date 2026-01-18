@@ -5,6 +5,21 @@ from core.config import Config
 from models.analysis_result import AnalysisResult
 from pydantic import ValidationError
 
+# #region agent log
+LOG_PATH = r"e:\3. projects\EchoBreaker\.cursor\debug.log"
+def _log(session_id, run_id, hypothesis_id, location, message, data):
+    try:
+        import time
+        log_entry = {"sessionId": session_id, "runId": run_id, "hypothesisId": hypothesis_id, "location": location, "message": message, "data": data, "timestamp": int(time.time() * 1000)}
+        with open(LOG_PATH, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(log_entry) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        print(f"[DEBUG LOG] {location}: {message}")  # Backup print
+    except Exception as ex:
+        print(f"[DEBUG LOG ERROR] Failed to write log: {ex}")
+# #endregion
+
 class ReasoningEngine:
     def __init__(self):
         self.model = Config.OLLAMA_MODEL
@@ -32,6 +47,14 @@ For each counter-argument type, you MUST provide a perspective that DIRECTLY CON
   
 - **Logical**: Challenge the REASONING STRUCTURE, identify fallacies, or present alternative causal models
   Example: If video uses "More guns = more deaths" → Logical counter: "Correlation vs. causation fallacy; third variables like poverty"
+
+**Academic/Scientific Insight Generation**
+You must generate a "academic_insight" for each counter-argument:
+- Write ~150 words of sophisticated, academic text.
+- Cite specific theories, general research fields, or philosophical frameworks.
+- Use an authoritative, objective tone (like a research abstract).
+- Do NOT use bullet points; use cohesive paragraphs.
+- **CRITICAL**: End with a reference line, e.g., "Ref: Habermas, Theory of Communicative Action."
 
 **Academic Search Query Engineering**
 For the youtube_query field, generate SPECIFIC, ACADEMIC-STYLE search queries:
@@ -70,7 +93,8 @@ You must return valid JSON that exactly matches this structure:
       "content": "string (2-3 sentences explaining the counter-perspective)",
       "source_reference": "string (general reference to supporting literature/philosophy)",
       "youtube_query": "string (academic-style search query with qualifiers)",
-      "semantic_contrast_score": 0.7 to 1.0 (how opposed this is to the original claim)
+      "semantic_contrast_score": 0.7 to 1.0 (how opposed this is to the original claim),
+      "academic_insight": "string (~150 words of academic context/theory)"
     }
   ]
 }
@@ -81,6 +105,7 @@ You must return valid JSON that exactly matches this structure:
 - Counter-arguments must be MAXIMALLY OPPOSED to the video's thesis
 - Search queries must be SPECIFIC and ACADEMIC in nature
 - Aim for semantic_contrast_score of 0.8+ (highly opposed perspectives)
+- academic_insight MUST be populated with high-quality text
 """
 
         user_prompt = f"""
@@ -94,6 +119,10 @@ Remember: Your counter-arguments must present the OPPOSITE perspective, not just
 """
 
         try:
+            # #region agent log
+            _log("debug-session", "run1", "A", "generator.py:107", "LLM request started", {"model": self.model})
+            # #endregion
+            
             response = ollama.chat(model=self.model, messages=[
                 {'role': 'system', 'content': system_prompt},
                 {'role': 'user', 'content': user_prompt},
@@ -101,17 +130,90 @@ Remember: Your counter-arguments must present the OPPOSITE perspective, not just
 
             content = response['message']['content']
             
+            # #region agent log
+            _log("debug-session", "run1", "A", "generator.py:127", "Raw LLM response received", {"content_length": len(content), "content_full": content if len(content) < 10000 else content[:10000] + "...[truncated]"})
+            # #endregion
+            
             # Parse JSON
             data = json.loads(content)
+            
+            # #region agent log
+            _log("debug-session", "run1", "B", "generator.py:134", "JSON parsed successfully", {"has_counter_arguments": "counter_arguments" in data, "counter_arguments_count": len(data.get("counter_arguments", []))})
+            # #endregion
             
             # Inject the URL if the model forgot it or used placeholder
             data['video_url'] = video_url
             
+            # #region agent log
+            if "counter_arguments" in data:
+                for idx, ca in enumerate(data["counter_arguments"]):
+                    has_youtube_query = "youtube_query" in ca
+                    youtube_query_value = ca.get("youtube_query", None)
+                    youtube_query_type = type(youtube_query_value).__name__ if youtube_query_value is not None else "NoneType"
+                    all_fields = list(ca.keys())
+                    _log("debug-session", "run1", "A", f"generator.py:143", f"Counter argument {idx} fields BEFORE fix", {"index": idx, "has_youtube_query": has_youtube_query, "youtube_query_value": str(youtube_query_value)[:200] if youtube_query_value else None, "youtube_query_type": youtube_query_type, "all_fields": all_fields, "type": ca.get("type"), "title": ca.get("title", "")[:50]})
+            # #endregion
+            
+            # Fix missing youtube_query fields - generate from title/content if missing
+            if "counter_arguments" in data:
+                for idx, ca in enumerate(data["counter_arguments"]):
+                    # Check if youtube_query is missing, None, empty, or whitespace-only
+                    youtube_query = ca.get("youtube_query")
+                    needs_fix = (
+                        "youtube_query" not in ca or 
+                        youtube_query is None or 
+                        (isinstance(youtube_query, str) and not youtube_query.strip())
+                    )
+                    
+                    if needs_fix:
+                        # Generate a default query from title, type, and key terms
+                        arg_type = ca.get("type", "")
+                        title = ca.get("title", "")
+                        # Extract key terms from title (first few words)
+                        title_words = title.split()[:4] if title else []
+                        title_keywords = " ".join(title_words) if title_words else ""
+                        # Create academic-style query
+                        default_query = f"{title_keywords} {arg_type} perspective research analysis".strip()
+                        # Ensure it's not empty
+                        if not default_query:
+                            default_query = f"{arg_type} counter argument research"
+                        ca["youtube_query"] = default_query
+                        # #region agent log
+                        _log("debug-session", "run1", "C", f"generator.py:161", f"Counter argument {idx} FIXED - added default youtube_query", {"index": idx, "generated_query": default_query, "original_fields": list(ca.keys()), "original_value": str(youtube_query) if youtube_query is not None else "None"})
+                        # #endregion
+                    else:
+                        # #region agent log
+                        _log("debug-session", "run1", "C", f"generator.py:166", f"Counter argument {idx} has valid youtube_query", {"index": idx, "youtube_query": str(youtube_query)[:200] if youtube_query else None})
+                        # #endregion
+            
+            # #region agent log
+            if "counter_arguments" in data:
+                for idx, ca in enumerate(data["counter_arguments"]):
+                    has_youtube_query = "youtube_query" in ca
+                    youtube_query_value = ca.get("youtube_query", None)
+                    _log("debug-session", "run1", "A", f"generator.py:180", f"Counter argument {idx} fields AFTER fix", {"index": idx, "has_youtube_query": has_youtube_query, "youtube_query_value": str(youtube_query_value)[:200] if youtube_query_value else None, "all_fields_after": list(ca.keys())})
+            # #endregion
+            
             # Validate with Pydantic
-            result = AnalysisResult(**data)
-            return result
+            try:
+                result = AnalysisResult(**data)
+                # #region agent log
+                _log("debug-session", "run1", "D", "generator.py:184", "Pydantic validation SUCCESS", {"counter_arguments_count": len(result.counter_arguments)})
+                # #endregion
+                return result
+            except Exception as validation_error:
+                # #region agent log
+                _log("debug-session", "run1", "E", "generator.py:188", "Pydantic validation FAILED", {"error_type": type(validation_error).__name__, "error_message": str(validation_error)[:1000], "counter_arguments_count": len(data.get("counter_arguments", [])), "data_keys": list(data.keys())})
+                if "counter_arguments" in data:
+                    for idx, ca in enumerate(data["counter_arguments"]):
+                        _log("debug-session", "run1", "E", f"generator.py:190", f"Counter argument {idx} at validation failure", {"index": idx, "all_fields": list(ca.keys()), "has_youtube_query": "youtube_query" in ca, "youtube_query": ca.get("youtube_query")})
+                # #endregion
+                raise
 
         except Exception as e:
+            # #region agent log
+            _log("debug-session", "run1", "A", "generator.py:127", "Exception caught in generate_analysis", {"error_type": type(e).__name__, "error_message": str(e)[:500]})
+            # #endregion
             print(f"Error in Ollama generation: {e}")
             # Return empty/error result or re-raise
             raise e

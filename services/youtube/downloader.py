@@ -1,5 +1,6 @@
 import os
 import yt_dlp
+from yt_dlp.utils import download_range_func
 from core.config import Config
 
 class YouTubeDownloader:
@@ -11,7 +12,7 @@ class YouTubeDownloader:
     def download_audio(self, url: str) -> str:
         """
         Downloads audio from a YouTube URL, converting it to 16kHz Mono WAV.
-        Truncates to the first 300 seconds.
+        Forcefully truncates to the first 300 seconds (5 minutes) to optimize speed.
         Returns the absolute path to the downloaded file.
         """
         # Get absolute path to project root where ffmpeg is located
@@ -21,6 +22,8 @@ class YouTubeDownloader:
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(self.output_dir, '%(id)s.%(ext)s'),
             'ffmpeg_location': project_root,
+            'download_ranges': download_range_func(None, [(0, 300)]), # STRICT 5 MIN LIMIT
+            'force_keyframes_at_cuts': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'wav',
@@ -29,7 +32,7 @@ class YouTubeDownloader:
             'postprocessor_args': [
                 '-ar', '16000',      # 16kHz sample rate
                 '-ac', '1',          # Mono channel
-                '-t', '300'          # Truncate to 300 seconds
+                '-vn',               # Drop video stream forcefully
             ],
             'quiet': False,
             'no_warnings': False,
@@ -53,10 +56,27 @@ class YouTubeDownloader:
                 filename = ydl.prepare_filename(info)
                 # processing creates a .wav file, we need to return that
                 base, _ = os.path.splitext(filename)
+                
+                # yt-dlp might append logic for ranges, but usually with outtmpl it sticks to id.
+                # However, with download_ranges, sometimes it adds stuff? No, usually fine.
+                # But just in case, we check for the file.
                 final_path = base + ".wav"
                 
+                # Double check if file exists, sometimes ranges naming is tricky
                 if not os.path.exists(final_path):
-                    raise FileNotFoundError(f"Expected output file not found: {final_path}")
+                    # Check if original filename exists (maybe conversion failed?)
+                    if os.path.exists(base + ".webm"):
+                        # Ensure we return valid path
+                         pass
+                    
+                    # If allow multiple is not set, we assume standard behavior
+                    if not os.path.exists(final_path):
+                         # Try finding any .wav in that dir with that id?
+                         pass
+                
+                if not os.path.exists(final_path):
+                     # Fallback check
+                     raise FileNotFoundError(f"Expected output file not found: {final_path}")
                 
                 return os.path.abspath(final_path)
 

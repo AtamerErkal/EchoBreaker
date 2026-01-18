@@ -30,6 +30,7 @@ class CounterArgument(BaseModel):
     youtube_query: str = Field(..., description="Search query to find videos supporting this argument")
     suggested_videos: List[VideoSuggestion] = []
     semantic_contrast_score: Optional[float] = None  # How opposed this is to original claim (0.0-1.0)
+    academic_insight: Optional[str] = None  # Scientific/Academic Perspective (~150 words)
 
 class AnalysisResult(BaseModel):
     video_url: str

@@ -6,9 +6,11 @@ from concurrent.futures import ThreadPoolExecutor
 class TranscriptionService:
     def __init__(self):
         # Load the model once at initialization
-        # 'base' model is a good balance of speed and accuracy for local F0/CPU usage
-        print("Loading Whisper model (base)... this may take a moment.")
-        self.model = whisper.load_model("base")
+        # Use CUDA if available, otherwise fallback to CPU
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Loading Whisper model (tiny) on {device}...")
+        self.model = whisper.load_model("tiny", device=device)
         self._executor = ThreadPoolExecutor(max_workers=1)
 
     async def transcribe_file(self, audio_file_path: str) -> str:
