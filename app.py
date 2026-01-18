@@ -515,7 +515,7 @@ if analyze_button:
                     response = requests.post(
                         "http://localhost:8000/analyze",
                         json={"video_url": video_url},
-                        timeout=600
+                        timeout=1200  # 20 minutes for dual-pass verification
                     )
             
             progress_bar.empty()
