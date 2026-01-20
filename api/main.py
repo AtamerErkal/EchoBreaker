@@ -1,116 +1,151 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 import os
-import shutil
+import asyncio
+import traceback
 from core.config import Config
-from models.analysis_result import AnalysisResult
+from models.analysis_result import AnalysisResult, VideoMetadata
 from services.youtube.downloader import YouTubeDownloader
 from services.audio.transcription import TranscriptionService
 from services.reasoning.generator import ReasoningEngine
 from services.search.youtube_search import SearchService
 
-app = FastAPI(title="EchoBreaker API (Local)", version="2.1.0")
+app = FastAPI(title="EchoBreaker API", version="2.2.0")
 
-# Initialize Services
+# =============================================================================
+# SERVICE INITIALIZATION
+# =============================================================================
 try:
-    print("Initializing EchoBreaker Local Services...")
+    print("🚀 Initializing EchoBreaker Local Services...")
     yt_downloader = YouTubeDownloader()
-    transcriber = TranscriptionService() # Loads Whisper model
-    reasoner = ReasoningEngine()         # Connects to Ollama
-    searchER = SearchService()
-    print("Services Initialized.")
+    transcriber = TranscriptionService() # Loads local Whisper model
+    reasoner = ReasoningEngine()         # Connects to local Ollama/Llama 3
+    search_service = SearchService()     # YouTube search integration
+    print("✅ All services initialized successfully.")
 except Exception as e:
-    print(f"Failed to initialize services: {e}")
+    print(f"❌ Critical Error during service initialization: {e}")
+    traceback.print_exc()
 
 class AnalyzeRequest(BaseModel):
     video_url: str
 
+# =============================================================================
+# API ENDPOINTS
+# =============================================================================
+
 @app.post("/analyze", response_model=AnalysisResult)
-async def analyze_video(request: AnalyzeRequest, background_tasks: BackgroundTasks):
+async def analyze_video(request: AnalyzeRequest):
     """
-    Orchestrates the Local EchoBreaker pipeline:
-    1. Download Audio (yt-dlp)
-    2. Transcribe (Whisper Local)
-    3. Intelligence (Ollama / Llama 3) - Combined Analysis & Reasoning
-    4. Search (yt-dlp) - Find video suggestions for counter-arguments
+    Orchestrates the full EchoBreaker pipeline:
+    1. Download audio and extract metadata via yt-dlp.
+    2. Transcribe audio locally using Whisper.
+    3. Analyze topic, claims, and generate counter-perspectives using Llama 3.
+    4. Search YouTube for videos matching those counter-perspectives.
+    5. Verify video relevance using AI fallback logic.
     """
     temp_file = None
     try:
-        # 1. Download
-        print(f"Downloading: {request.video_url}")
-        temp_file = yt_downloader.download_audio(request.video_url)
+        # STEP 1: DOWNLOAD & METADATA
+        print(f"\n--- [Step 1] Processing Video: {request.video_url} ---")
+        # Returns (absolute_path, metadata_dictionary)
+        temp_file, meta_dict = yt_downloader.download_audio_with_metadata(request.video_url)
         
-        # 2. Transcribe
-        print("Transcribing with Whisper...")
+        # STEP 2: TRANSCRIPTION
+        print("--- [Step 2] Transcribing with Local Whisper ---")
         transcript = await transcriber.transcribe_file(temp_file)
         if not transcript:
-            raise HTTPException(status_code=400, detail="Could not transcribe audio.")
+            raise HTTPException(status_code=400, detail="Transcription failed. Audio might be silent.")
 
-        # 3. Intelligence (Combined Analysis & Reasoning)
-        print("Running Llama 3 Analysis...")
+        # STEP 3: REASONING & ANALYSIS
+        print("--- [Step 3] Generating Insights with Llama 3 ---")
+        # Result contains topic, primary_claim, and counter_arguments list
         result = reasoner.generate_analysis(transcript, request.video_url)
         
-        # 4. Search for Counter-Argument Videos with Dual-Pass Verification
-        # 4. Search for Counter-Argument Videos (Parallel Execution)
-        print("Searching for suggested videos with relevance verification (Parallel)...")
-        if not searchER:
-             print("Warning: SearchService not initialized")
-        else:
-            import asyncio
+        # Inject metadata for the Frontend UI
+        result.video_metadata = VideoMetadata(
+            video_title=meta_dict.get('title', 'Unknown Title'),
+            channel_name=meta_dict.get('channel', 'Unknown Channel'),
+            duration=meta_dict.get('duration_formatted', '00:00'),
+            view_count=str(meta_dict.get('view_count', '0')),
+            upload_date=meta_dict.get('upload_date', 'Unknown'),
+            thumbnail=meta_dict.get('thumbnail'),
+            description=meta_dict.get('description', '')[:500] # Limit desc length
+        )
+        
+        # STEP 4: SEARCH & VERIFICATION
+        print("--- [Step 4] Searching for Diverse Perspectives ---")
+        
+        async def process_counter_argument(argument):
+            query = argument.youtube_query
+            if not query:
+                return
 
-            async def process_counter_argument(argument):
-                if not argument.youtube_query:
-                    return
-
-                try:
-                    print(f"Searching for: {argument.youtube_query}")
-                    # Search for candidates (limit=1 for maximum speed < 60s target)
-                    suggestions = await searchER.search_videos(argument.youtube_query, limit=1)
+            try:
+                print(f"  🔍 Searching for '{argument.type}': {query}")
+                # Get raw search results
+                raw_suggestions = await search_service.search_videos(query, limit=3)
+                
+                verified_videos = []
+                for video in raw_suggestions:
+                    # AI-powered Relevance Check
+                    verification = reasoner.verify_relevance(
+                        counter_argument_content=argument.content,
+                        video_title=video.title,
+                        video_description=video.description or ""
+                    )
                     
-                    verified_videos = []
-                    for video in suggestions:
-                        # Verify relevance (Blocking call, but acceptable for local LLM text processing)
-                        verification = reasoner.verify_relevance(
-                            counter_argument_content=argument.content,
-                            video_title=video.title,
-                            video_description=video.description or ""
-                        )
-                        
-                        relevance_score = verification.get('score', 0.5)
-                        verdict = verification.get('verdict', 'reject')
-                        reason = verification.get('reason', '')
-                        
-                        if verdict == 'accept' and relevance_score >= 0.7:
-                            video.relevance_score = relevance_score
-                            verified_videos.append(video)
+                    score = verification.get('score', 0.5)
+                    verdict = verification.get('verdict', 'reject')
                     
-                    # Keep ONLY the TOP 1 verified video
-                    verified_videos.sort(key=lambda v: v.relevance_score or 0, reverse=True)
-                    argument.suggested_videos = verified_videos[:1]
-                    print(f"  ✅ Argument '{argument.type}': Found {len(argument.suggested_videos)} verified video(s)")
+                    # LOGIC: Accept if AI says "accept" OR if score is high enough (>=0.6)
+                    if verdict == 'accept' or score >= 0.6:
+                        video.relevance_score = score
+                        verified_videos.append(video)
+                
+                # FALLBACK MECHANISM:
+                # If the AI was too strict and rejected everything, but we found videos,
+                # we keep the #1 search result so the UI isn't empty.
+                if not verified_videos and raw_suggestions:
+                    print(f"    ⚠️ [Fallback] AI was too strict for '{argument.type}'. Adding top search result.")
+                    fallback = raw_suggestions[0]
+                    fallback.relevance_score = 0.5 # Default neutral score
+                    verified_videos.append(fallback)
 
-                except Exception as sx:
-                    print(f"Search failed for {argument.youtube_query}: {sx}")
+                # Final sorting and assignment
+                verified_videos.sort(key=lambda v: v.relevance_score or 0, reverse=True)
+                argument.suggested_videos = verified_videos[:2] # Return top 2 videos
+                print(f"    ✅ Found {len(argument.suggested_videos)} video(s) for {argument.type}")
 
-            # Run all searches concurrently
+            except Exception as sx:
+                print(f"  ❌ Search task failed: {sx}")
+
+        # Run all category searches (Ethical, Empirical, Logical) concurrently
+        if result.counter_arguments:
             await asyncio.gather(*(process_counter_argument(arg) for arg in result.counter_arguments))
         
-        
+        print("--- [Final] Pipeline Complete. Returning results. ---\n")
         return result
 
     except Exception as e:
-        import traceback
+        print(f"🔥 PIPELINE CRASH: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     
     finally:
-        # Cleanup temp file
+        # Cleanup temporary audio files
         if temp_file and os.path.exists(temp_file):
             try:
                 os.remove(temp_file)
-            except:
-                print(f"Error cleaning up file {temp_file}")
+                print(f"🧹 Cleanup: Removed temporary file {os.path.basename(temp_file)}")
+            except Exception as cleanup_err:
+                print(f"⚠️ Cleanup failed: {cleanup_err}")
 
 @app.get("/")
 def health_check():
-    return {"status": "EchoBreaker (Local) is operational"}
+    """Returns the current status and configuration of the API."""
+    return {
+        "status": "online",
+        "service": "EchoBreaker API",
+        "version": "2.2.0",
+        "llm_model": Config.OLLAMA_MODEL
+    }

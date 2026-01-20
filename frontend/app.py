@@ -1,250 +1,141 @@
 import streamlit as st
 import requests
-import plotly.graph_objects as go
-import plotly.express as px
-from typing import Optional
 import json
 from datetime import datetime
+from typing import Optional
 
 # =============================================================================
 # PAGE CONFIGURATION
 # =============================================================================
 st.set_page_config(
-    page_title="EchoBreaker V2.0 | Intelligence Dashboard",
-    page_icon="🔍",
+    page_title="EchoBreaker | Breaking Algorithmic Echo Chambers",
+    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # =============================================================================
-# CUSTOM CSS STYLING WITH GOOGLE FONTS
+# MINIMAL PROFESSIONAL CSS
 # =============================================================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Root Variables */
-    :root {
-        --slate-950: #020617;
-        --slate-900: #0f172a;
-        --slate-800: #1e293b;
-        --slate-700: #334155;
-        --slate-600: #475569;
-        --emerald: #10b981;
-        --emerald-dark: #059669;
-        --emerald-light: #34d399;
-        --gold: #fbbf24;
-        --gold-dark: #f59e0b;
-        --red: #ef4444;
-        --blue: #3b82f6;
-        --text-primary: #f1f5f9;
-        --text-secondary: #94a3b8;
-        --text-tertiary: #64748b;
-    }
-    
-    /* Global Font */
     * {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Inter', -apple-system, sans-serif;
     }
     
-    h1, h2, h3, .section-header {
-        font-family: 'Lexend', sans-serif;
-    }
-    
-    /* Main Container */
     .main {
-        background-color: var(--slate-950);
-        color: var(--text-primary);
+        background-color: #0a0e1a;
+        color: #e2e8f0;
     }
     
-    /* Sidebar Styling */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, var(--slate-900) 0%, var(--slate-800) 100%);
-        border-right: 1px solid var(--slate-700);
+        background: #111827;
+        border-right: 1px solid #1f2937;
     }
     
-    [data-testid="stSidebar"] h1, 
+    [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        color: var(--emerald);
+        color: #10b981;
     }
     
-    /* Metric Cards */
-    .metric-card {
-        background: linear-gradient(135deg, var(--slate-800) 0%, var(--slate-700) 100%);
-        padding: 1.5rem;
+    /* Mission Box */
+    .mission-box {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+        border-left: 4px solid #10b981;
+        padding: 2rem;
         border-radius: 0.75rem;
-        border: 1px solid var(--slate-600);
-        text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        margin: 2rem 0;
     }
     
-    .metric-card:hover {
-        border-color: var(--emerald);
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.25);
-    }
-    
-    .metric-label {
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-    
-    .metric-value {
-        color: var(--text-primary);
-        font-size: 2.25rem;
-        font-weight: 800;
-        font-family: 'Lexend', sans-serif;
-    }
-    
-    .metric-subtitle {
-        color: var(--text-tertiary);
-        font-size: 0.75rem;
-        margin-top: 0.5rem;
-    }
-    
-    /* Video Cards */
-    .video-card {
-        background: var(--slate-800);
-        border: 1px solid var(--slate-700);
-        border-radius: 0.75rem;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 100%;
-        position: relative;
-    }
-    
-    .video-card:hover {
-        border-color: var(--emerald);
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 16px 36px rgba(16, 185, 129, 0.3);
-    }
-    
-    .video-thumbnail-container {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .video-thumbnail {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        border-bottom: 1px solid var(--slate-700);
-        transition: transform 0.3s ease;
-    }
-    
-    .video-card:hover .video-thumbnail {
-        transform: scale(1.05);
-    }
-    
-    .video-metadata-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-        padding: 1rem 0.75rem 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.7rem;
-        color: var(--text-primary);
-    }
-    
-    .relevance-badge {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        padding: 0.35rem 0.75rem;
-        border-radius: 0.5rem;
+    .mission-title {
+        color: #10b981;
+        font-size: 1.5rem;
         font-weight: 700;
-        font-size: 0.7rem;
-        backdrop-filter: blur(10px);
+        margin-bottom: 1rem;
+    }
+    
+    .mission-text {
+        color: #cbd5e1;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    /* Video Summary Card */
+    .video-summary-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        margin: 2rem 0;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .video-title-display {
+        color: #f1f5f9;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .video-meta-row {
         display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    
-    .relevance-high {
-        background: rgba(16, 185, 129, 0.9);
-        color: white;
-    }
-    
-    .relevance-medium {
-        background: rgba(251, 191, 36, 0.9);
-        color: var(--slate-900);
-    }
-    
-    .relevance-low {
-        background: rgba(239, 68, 68, 0.9);
-        color: white;
-    }
-    
-    .video-content {
-        padding: 1.25rem;
-    }
-    
-    .video-title {
-        color: var(--text-primary);
-        font-weight: 600;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        color: #94a3b8;
         font-size: 0.95rem;
-        margin-bottom: 0.75rem;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        min-height: 2.85rem;
     }
     
-    .video-channel {
-        color: var(--text-secondary);
-        font-size: 0.8rem;
-        margin-bottom: 0.5rem;
+    .video-meta-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
     
-    .video-stats {
-        color: var(--text-tertiary);
-        font-size: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    
-    .video-link {
-        display: inline-block;
-        background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
-        color: white;
-        padding: 0.65rem 1.25rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
+    .topic-label {
+        color: #3b82f6;
         font-weight: 700;
         font-size: 0.85rem;
-        transition: all 0.3s ease;
-        text-align: center;
-        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
     
-    .video-link:hover {
-        background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
-        transform: translateX(2px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    .topic-text {
+        color: #10b981;
+        font-size: 1.1rem;
+        font-weight: 600;
     }
     
-    /* Counter Argument Cards */
-    .counter-card {
-        background: linear-gradient(135deg, var(--slate-800) 0%, var(--slate-900) 100%);
-        border: 1px solid var(--slate-700);
+    .claim-label {
+        color: #fbbf24;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .claim-text {
+        color: #cbd5e1;
+        font-size: 1.05rem;
+        line-height: 1.8;
+    }
+    
+    /* Counter Argument Container */
+    .counter-container {
+        background: #1e293b;
+        border: 1px solid #334155;
         border-radius: 0.75rem;
         padding: 2rem;
-        margin-bottom: 2.5rem;
-        border-left: 4px solid var(--gold);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        margin-bottom: 2rem;
+        border-left: 4px solid #fbbf24;
     }
     
     .counter-header {
@@ -256,160 +147,251 @@ st.markdown("""
     }
     
     .counter-type {
-        background: var(--emerald);
-        color: var(--slate-900);
-        padding: 0.5rem 1.25rem;
-        border-radius: 0.5rem;
-        font-weight: 800;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-    
-    .contrast-badge {
-        background: var(--gold);
-        color: var(--slate-900);
-        padding: 0.4rem 0.9rem;
+        background: #10b981;
+        color: #0a0e1a;
+        padding: 0.6rem 1.5rem;
         border-radius: 0.5rem;
         font-weight: 700;
-        font-size: 0.7rem;
-    }
-    
-    .counter-title {
-        color: var(--text-primary);
-        font-size: 1.5rem;
-        font-weight: 700;
-        flex: 1;
-        min-width: 200px;
-    }
-    
-    .counter-content {
-        color: var(--text-secondary);
-        line-height: 1.9;
-        font-size: 1.05rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .counter-reference {
-        color: var(--gold);
-        font-size: 0.85rem;
-        font-style: italic;
-    }
-    
-    /* Section Headers */
-    .section-header {
-        color: var(--emerald);
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 2.5rem 0 1.5rem 0;
-        padding-bottom: 0.75rem;
-        border-bottom: 2px solid var(--slate-700);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    /* Sentiment Badges */
-    .badge {
-        display: inline-block;
-        padding: 0.4rem 1rem;
-        border-radius: 0.5rem;
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
     
-    .badge-positive { background: #065f46; color: #10b981; }
-    .badge-negative { background: #7f1d1d; color: #ef4444; }
-    .badge-neutral { background: #374151; color: #9ca3af; }
-    .badge-mixed { background: #713f12; color: #fbbf24; }
+    .contrast-score {
+        background: #fbbf24;
+        color: #0a0e1a;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    .counter-title {
+        color: #f1f5f9;
+        font-size: 1.3rem;
+        font-weight: 700;
+        flex: 1;
+    }
+    
+    .counter-content {
+        color: #cbd5e1;
+        line-height: 1.9;
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+    }
+    
+    /* Academic Section */
+    .academic-section {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 3px solid #3b82f6;
+    }
+    
+    .academic-label {
+        color: #3b82f6;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .academic-text {
+        color: #94a3b8;
+        font-style: italic;
+        line-height: 1.8;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .academic-link {
+        display: inline-block;
+        color: #60a5fa;
+        text-decoration: none;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        background: #1e293b;
+        border-radius: 0.5rem;
+        border: 1px solid #334155;
+        transition: all 0.3s ease;
+    }
+    
+    .academic-link:hover {
+        background: #334155;
+        border-color: #3b82f6;
+    }
+    
+    /* Videos Section */
+    .videos-section {
+        margin-top: 1.5rem;
+    }
+    
+    .videos-label {
+        color: #10b981;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .video-card {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    
+    .video-card:hover {
+        border-color: #10b981;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+    }
+    
+    .video-thumbnail {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #1e293b;
+    }
+    
+    .video-content {
+        padding: 1.25rem;
+    }
+    
+    .video-title-card {
+        color: #f1f5f9;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+    }
+    
+    .video-meta {
+        color: #64748b;
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .relevance-badge {
+        display: inline-block;
+        padding: 0.35rem 0.8rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 0.7rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .relevance-high { background: #10b981; color: white; }
+    .relevance-medium { background: #fbbf24; color: #0a0e1a; }
+    .relevance-low { background: #64748b; color: white; }
+    
+    .video-link {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.65rem 1.25rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .video-link:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    /* Section Headers */
+    .section-header {
+        color: #10b981;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 3rem 0 1.5rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #1e293b;
+    }
     
     /* Buttons */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
         font-weight: 700;
         border: none;
-        padding: 0.95rem 2rem;
+        padding: 1rem 2rem;
         border-radius: 0.5rem;
-        font-size: 1rem;
+        font-size: 1.05rem;
         transition: all 0.3s ease;
     }
     
     .stButton>button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
     }
     
     /* Input Fields */
     .stTextInput>div>div>input {
-        background-color: var(--slate-800);
-        border: 1px solid var(--slate-700);
-        color: var(--text-primary);
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        color: #f1f5f9;
         border-radius: 0.5rem;
-        padding: 0.95rem;
+        padding: 1rem;
         font-size: 1rem;
     }
     
     .stTextInput>div>div>input:focus {
-        border-color: var(--emerald);
+        border-color: #10b981;
         box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
     
-    /* Skeleton Loader Animation */
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-    
-    .skeleton-loader {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    
-    /* Filter Panel */
-    .filter-panel {
-        background: var(--slate-800);
-        border: 1px solid var(--slate-700);
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    /* Expander Styling */
-    .streamlit-expanderHeader {
-        background: var(--slate-800);
+    /* Processing Status */
+    .processing-stage {
+        background: #1e293b;
+        border-left: 4px solid #3b82f6;
+        padding: 1rem 1.5rem;
+        margin: 0.5rem 0;
         border-radius: 0.5rem;
+    }
+    
+    .stage-title {
+        color: #3b82f6;
         font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .stage-desc {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# SIDEBAR - MISSION & STATUS
+# SIDEBAR
 # =============================================================================
 with st.sidebar:
-    st.markdown("# 🔍 EchoBreaker V2.0")
-    st.markdown("### Intelligence Dashboard")
+    st.markdown("# 🛡️ EchoBreaker")
+    st.markdown("### Breaking Algorithmic Echo Chambers")
     
     st.markdown("---")
     
-    # Mission in collapsible section
-    with st.expander("📖 Our Mission", expanded=False):
-        st.markdown("""
-        In an age where algorithms reinforce existing beliefs, **EchoBreaker V2.0** provides 
-        objective counter-perspectives across three dimensions:
-        
-        - ⚖️ **Ethical**: Moral implications and value trade-offs
-        - 📈 **Empirical**: Data-driven evidence and research  
-        - 🧠 **Logical**: Reasoning consistency and fallacy detection
-        
-        We combat algorithmic bias by surfacing **intellectual diversity** through:
-        - **Semantic Contrast Enforcement**: Counter-arguments are diametrically opposed
-        - **Dual-Pass Verification**: AI-verified relevance scoring
-        - **Source Authority**: Prioritizing news, research, and educational content
-        """)
+    st.markdown("""
+    ### 🎯 Our Mission
+    
+    Modern platforms like YouTube optimize for engagement, unintentionally creating echo chambers where you only see perspectives similar to what you already believe.
+    
+    **EchoBreaker doesn't criticize YouTube.** We complement it by surfacing the strongest counter-perspectives the algorithm isn't showing you.
+    
+    **The goal:** Help you make informed decisions by considering multiple viewpoints before forming opinions.
+    """)
     
     st.markdown("---")
     
@@ -423,29 +405,59 @@ with st.sidebar:
             st.error("⚠️ API Issues")
     except:
         st.error("❌ API Offline")
+        st.caption("Start with: `uvicorn api.main:app --reload`")
     
     st.markdown("---")
     
-    st.markdown("### 🎯 How It Works")
     st.markdown("""
-    1. **Extract** audio from YouTube (yt-dlp)
+    ### 📖 How It Works
+    
+    1. **Extract** audio from YouTube
     2. **Transcribe** using Whisper AI
-    3. **Analyze** with semantic contrast enforcement
-    4. **Verify** video relevance (dual-pass)
-    5. **Discover** authoritative diverse perspectives
+    3. **Analyze** claims and arguments
+    4. **Generate** counter-perspectives across 3 dimensions:
+       - 🔹 **Ethical**: Moral frameworks
+       - 🔹 **Empirical**: Research/data
+       - 🔹 **Logical**: Reasoning critiques
+    5. **Discover** authoritative sources
+    6. **Verify** quality (dual-pass filtering)
+    
+    **All processing happens locally.**
     """)
     
     st.markdown("---")
-    st.markdown("_Powered by Local AI_")
-    st.caption("Whisper + Llama 3 via Ollama")
+    st.caption("Powered by Whisper + Llama 3")
+    st.caption("100% Local • 100% Private")
 
 # =============================================================================
 # MAIN CONTENT
 # =============================================================================
-st.markdown("# 🎯 Analyze Video Content")
-st.markdown("Enter a YouTube URL to discover **diametrically opposed** perspectives with AI-verified relevance.")
 
-# Input Section with examples
+# Mission Statement
+st.markdown("""
+<div class="mission-box">
+    <div class="mission-title">🎯 Why EchoBreaker Exists</div>
+    <div class="mission-text">
+        <strong>The Problem:</strong> Recommendation algorithms create filter bubbles. You watch one viewpoint, 
+        the algorithm shows you 10 more supporting it. Over time, you become polarized—not through 
+        deliberate choice, but through <strong>algorithmic isolation from diverse perspectives</strong>.
+        <br><br>
+        <strong>Our Solution:</strong> We surface the <strong>strongest counter-arguments</strong> the algorithm 
+        isn't showing you. Not to change your mind, but to help you make informed decisions by considering 
+        <strong>multiple sides before forming opinions</strong>.
+        <br><br>
+        <strong>We respect YouTube.</strong> We're not competitors—we're a complementary tool addressing 
+        an inherent challenge in all engagement-optimized platforms.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# Input Section
+st.markdown("## 🔍 Analyze Video Content")
+st.markdown("Enter a YouTube URL to discover counter-perspectives you're not algorithmically seeing.")
+
 col1, col2 = st.columns([4, 1])
 with col1:
     video_url = st.text_input(
@@ -456,8 +468,6 @@ with col1:
 with col2:
     analyze_button = st.button("🔍 Analyze", use_container_width=True)
 
-
-
 # =============================================================================
 # ANALYSIS LOGIC
 # =============================================================================
@@ -465,38 +475,33 @@ if analyze_button:
     if not video_url:
         st.error("⚠️ Please enter a valid YouTube URL.")
     else:
-        # Enhanced multi-stage skeleton loaders
         stages = [
-            ("🎬 Extracting audio stream...", "Downloading content"),
-            ("🎤 Transcribing with Whisper AI...", "Speech-to-text processing"),
-            ("🧠 Analyzing rhetorical patterns...", "Claim extraction and sentiment analysis"),
-            ("🔍 Generating counter-arguments...", "Semantic contrast enforcement"),
-            ("🌐 Cross-referencing global perspectives...", "Searching verified sources"),
-            ("✅ Verifying source authority...", "Dual-pass relevance checking"),
+            ("🎬 Extracting audio", "Downloading content from YouTube"),
+            ("🎤 Transcribing speech", "Whisper AI processing"),
+            ("🧠 Analyzing arguments", "Extracting claims and viewpoints"),
+            ("🔍 Generating counter-perspectives", "Ethical, Empirical, Logical dimensions"),
+            ("🌐 Discovering sources", "Searching for authoritative counter-content"),
+            ("✅ Verifying quality", "Dual-pass relevance checking"),
         ]
         
-        progress_container = st.container()
+        progress_bar = st.progress(0)
         status_placeholder = st.empty()
         
-        with progress_container:
-            progress_bar = st.progress(0)
-            stage_cols = st.columns(len(stages))
-            
-            for i, (stage_icon, stage_desc) in enumerate(stages):
-                with stage_cols[i]:
-                    st.markdown(f"<div style='text-align: center; font-size: 0.7rem; color: var(--text-tertiary);'>{stage_icon}</div>", unsafe_allow_html=True)
-        
         try:
-            for i, (msg, desc) in enumerate(stages):
-                status_placeholder.info(f"{msg}\n\n_{desc}_")
+            for i, (stage_title, stage_desc) in enumerate(stages):
+                status_placeholder.markdown(f"""
+                <div class="processing-stage">
+                    <div class="stage-title">{stage_title}</div>
+                    <div class="stage-desc">{stage_desc}</div>
+                </div>
+                """, unsafe_allow_html=True)
                 progress_bar.progress((i + 1) / len(stages))
                 
                 if i == 0:
-                    # Start the actual request
                     response = requests.post(
                         "http://localhost:8000/analyze",
                         json={"video_url": video_url},
-                        timeout=1200  # 20 minutes for dual-pass verification
+                        timeout=1200
                     )
             
             progress_bar.empty()
@@ -504,270 +509,114 @@ if analyze_button:
             
             if response.status_code == 200:
                 data = response.json()
-                st.success("✅ Analysis Complete! Intelligence report generated.")
+                st.success("✅ Analysis Complete!")
                 
                 # =============================================================================
-                # QUICK INSIGHTS - METRICS & VISUALIZATIONS
+                # VIDEO SUMMARY WITH METADATA
                 # =============================================================================
-                st.markdown('<div class="section-header">📊 Intelligence Overview</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-header">📺 Video Summary</div>', unsafe_allow_html=True)
                 
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    sentiment = data.get('overall_sentiment', 'N/A').upper()
+                metadata = data.get('video_metadata', {})
+                if metadata:
+                    # Format duration
+                    duration = metadata.get('duration')
+                    if duration:
+                        mins, secs = divmod(duration, 60)
+                        hours, mins = divmod(mins, 60)
+                        duration_str = f"{hours}:{mins:02d}:{secs:02d}" if hours > 0 else f"{mins}:{secs:02d}"
+                    else:
+                        duration_str = "N/A"
+                    
+                    # Format views
+                    views = metadata.get('view_count', 0)
+                    if views >= 1000000:
+                        views_str = f"{views/1000000:.1f}M views"
+                    elif views >= 1000:
+                        views_str = f"{views/1000:.1f}K views"
+                    else:
+                        views_str = f"{views} views"
+                    
+                    # Format date
+                    upload_date = metadata.get('upload_date', '')
+                    if upload_date and len(upload_date) == 8:
+                        formatted_date = f"{upload_date[0:4]}-{upload_date[4:6]}-{upload_date[6:8]}"
+                    else:
+                        formatted_date = "N/A"
+                    
                     st.markdown(f"""
-                    <div class="metric-card">
-                        <div class="metric-label">Overall Sentiment</div>
-                        <div class="metric-value">{sentiment}</div>
-                        <div class="metric-subtitle">Primary tone detected</div>
+                    <div class="video-summary-card">
+                        <div class="video-title-display">{metadata.get('title', 'Unknown Title')}</div>
+                        <div class="video-meta-row">
+                            <div class="video-meta-item">📺 {metadata.get('channel_name', 'Unknown Channel')}</div>
+                            <div class="video-meta-item">⏱️ {duration_str}</div>
+                            <div class="video-meta-item">👁️ {views_str}</div>
+                            <div class="video-meta-item">📅 {formatted_date}</div>
+                        </div>
+                        
+                        <div class="topic-label">🎯 Topic</div>
+                        <div class="topic-text">{data.get('topic', 'Not specified')}</div>
+                        
+                        <div class="claim-label">💬 Primary Claim</div>
+                        <div class="claim-text">{data.get('primary_claim', data.get('topic_summary', 'No claim extracted.'))}</div>
                     </div>
                     """, unsafe_allow_html=True)
+                else:
+                    st.info("Video metadata not available.")
                 
-                with col2:
-                    claims_count = len(data.get('claims', []))
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <div class="metric-label">Claims Extracted</div>
-                        <div class="metric-value">{claims_count}</div>
-                        <div class="metric-subtitle">Statements analyzed</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                # =============================================================================
+                # COUNTER-PERSPECTIVES (3 BIG BOXES)
+                # =============================================================================
+                st.markdown('<div class="section-header">🔓 Counter-Perspectives</div>', unsafe_allow_html=True)
+                st.markdown("These are **opposing viewpoints** the algorithm likely isn't showing you. Each is backed by academic context and verified sources.")
                 
-                with col3:
-                    counter_count = len(data.get('counter_arguments', []))
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <div class="metric-label">Counter-Arguments</div>
-                        <div class="metric-value">{counter_count}</div>
-                        <div class="metric-subtitle">Opposing perspectives</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col4:
-                    total_videos = sum(len(c.get('suggested_videos', [])) for c in data.get('counter_arguments', []))
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <div class="metric-label">Verified Videos</div>
-                        <div class="metric-value">{total_videos}</div>
-                        <div class="metric-subtitle">AI-verified sources</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                # Visualizations
-                st.markdown("### 📈 Data Visualizations")
-                
-                viz_col1, viz_col2 = st.columns(2)
-                
-                claims = data.get('claims', [])
                 counter_arguments = data.get('counter_arguments', [])
-                
-                # Sentiment Distribution Pie Chart
-                with viz_col1:
-                    if claims:
-                        st.markdown("#### Sentiment Distribution")
-                        sentiment_counts = {}
-                        for claim in claims:
-                            sent = claim.get('sentiment', 'neutral')
-                            sentiment_counts[sent] = sentiment_counts.get(sent, 0) + 1
-                        
-                        fig = go.Figure(data=[go.Pie(
-                            labels=list(sentiment_counts.keys()),
-                            values=list(sentiment_counts.values()),
-                            hole=0.4,
-                            marker=dict(colors=['#10b981', '#ef4444', '#9ca3af', '#fbbf24']),
-                            textfont=dict(color='#f1f5f9', size=14, family='Inter')
-                        )])
-                        fig.update_layout(
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            font=dict(color='#f1f5f9', family='Inter'),
-                            height=300,
-                            showlegend=True,
-                            margin=dict(l=20, r=20, t=20, b=20)
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                
-                # Average Confidence Gauge
-                with viz_col2:
-                    if claims:
-                        st.markdown("#### Average Confidence")
-                        avg_confidence = sum(c.get('confidence_score', 0) for c in claims) / len(claims)
-                        
-                        fig = go.Figure(go.Indicator(
-                            mode="gauge+number+delta",
-                            value=avg_confidence * 100,
-                            domain={'x': [0, 1], 'y': [0, 1]},
-                            title={'text': "AI Certainty", 'font': {'color': '#f1f5f9', 'family': 'Lexend'}},
-                            number={'suffix': "%", 'font': {'color': '#f1f5f9', 'family': 'Lexend'}},
-                            gauge={
-                                'axis': {'range': [None, 100], 'tickcolor': '#94a3b8'},
-                                'bar': {'color': "#10b981"},
-                                'bgcolor': "#1e293b",
-                                'borderwidth': 2,
-                                'bordercolor': "#334155",
-                                'steps': [
-                                    {'range': [0, 50], 'color': '#475569'},
-                                    {'range': [50, 75], 'color': '#64748b'},
-                                    {'range': [75, 100], 'color': '#94a3b8'}
-                                ],
-                                'threshold': {
-                                    'line': {'color': "#fbbf24", 'width': 4},
-                                    'thickness': 0.75,
-                                    'value': 90
-                                }
-                            }
-                        ))
-                        fig.update_layout(
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            font={'color': "#f1f5f9", 'family': 'Inter'},
-                            height=300,
-                            margin=dict(l=20, r=20, t=40, b=20)
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                
-                # Counter-Argument Type Distribution
-                if counter_arguments:
-                    st.markdown("#### Counter-Argument Type Distribution")
-                    types = [arg.get('type', 'Unknown') for arg in counter_arguments]
-                    type_counts = {t: types.count(t) for t in set(types)}
-                    
-                    fig = go.Figure(data=[go.Bar(
-                        x=list(type_counts.keys()),
-                        y=list(type_counts.values()),
-                        marker=dict(
-                            color=['#10b981', '#3b82f6', '#fbbf24'][:len(type_counts)],
-                            line=dict(color='#1e293b', width=2)
-                        ),
-                        text=list(type_counts.values()),
-                        textposition='auto',
-                    )])
-                    fig.update_layout(
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='#f1f5f9', family='Inter'),
-                        height=300,
-                        xaxis=dict(showgrid=False, color='#94a3b8'),
-                        yaxis=dict(showgrid=True, gridcolor='#334155', color='#94a3b8'),
-                        margin=dict(l=20, r=20, t=20, b=20)
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                # =============================================================================
-                # TOPIC SUMMARY
-                # =============================================================================
-                st.markdown('<div class="section-header">📝 Topic Summary</div>', unsafe_allow_html=True)
-                st.info(data.get('topic_summary', 'No summary available.'))
-                
-                # =============================================================================
-                # EXTRACTED CLAIMS WITH FILTERS
-                # =============================================================================
-                st.markdown('<div class="section-header">💬 Extracted Claims</div>', unsafe_allow_html=True)
-                
-                if claims:
-                    # Filter controls
-                    filter_col1, filter_col2, filter_col3 = st.columns([2, 2, 3])
-                    
-                    with filter_col1:
-                        sentiment_filter = st.selectbox(
-                            "Filter by Sentiment",
-                            ["All"] + list(set(c.get('sentiment', 'neutral') for c in claims))
-                        )
-                    
-                    with filter_col2:
-                        sort_option = st.selectbox(
-                            "Sort by",
-                            ["Confidence (High to Low)", "Confidence (Low to High)", "Original Order"]
-                        )
-                    
-                    with filter_col3:
-                        search_term = st.text_input("🔍 Search claims", placeholder="Enter keywords...")
-                    
-                    # Apply filters
-                    filtered_claims = claims.copy()
-                    
-                    if sentiment_filter != "All":
-                        filtered_claims = [c for c in filtered_claims if c.get('sentiment') == sentiment_filter]
-                    
-                    if search_term:
-                        filtered_claims = [c for c in filtered_claims if search_term.lower() in c.get('text', '').lower()]
-                    
-                    if sort_option == "Confidence (High to Low)":
-                        filtered_claims.sort(key=lambda x: x.get('confidence_score', 0), reverse=True)
-                    elif sort_option == "Confidence (Low to High)":
-                        filtered_claims.sort(key=lambda x: x.get('confidence_score', 0))
-                    
-                    st.caption(f"Showing {len(filtered_claims)} of {len(claims)} claims")
-                    
-                    with st.expander(f"View Claims", expanded=True):
-                        for i, claim in enumerate(filtered_claims[:20], 1):
-                            sentiment = claim.get('sentiment', 'neutral')
-                            badge_class = f"badge-{sentiment}"
-                            confidence = claim.get('confidence_score', 0) * 100
-                            
-                            st.markdown(f"""
-                            <div style="background: var(--slate-800); padding: 1.25rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 3px solid var(--emerald);">
-                                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.75rem;">
-                                    <span class="badge {badge_class}">{sentiment.upper()}</span>
-                                    <span style="color: var(--gold); font-size: 0.85rem; font-weight: 600;">
-                                        ⚡ {confidence:.0f}% Confidence
-                                    </span>
-                                </div>
-                                <p style="color: var(--text-primary); margin: 0; line-height: 1.7;">
-                                    {claim.get('text', '')}
-                                </p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                
-                # =============================================================================
-                # COUNTER-ARGUMENTS & VIDEO SUGGESTIONS
-                # =============================================================================
-                st.markdown('<div class="section-header">🔓 Alternative Perspectives</div>', unsafe_allow_html=True)
-                st.caption("_AI-verified counter-arguments with semantic contrast enforcement_")
                 
                 if counter_arguments:
                     for counter in counter_arguments:
-                        # Counter Argument Header
                         contrast_score = counter.get('semantic_contrast_score', 0.8)
                         
                         st.markdown(f"""
-                        <div class="counter-card">
+                        <div class="counter-container">
                             <div class="counter-header">
                                 <span class="counter-type">{counter.get('type', 'Unknown')}</span>
-                                <span class="contrast-badge">⚡ {contrast_score * 100:.0f}% Opposition</span>
-                                <h3 class="counter-title">{counter.get('title', 'Untitled')}</h3>
+                                <span class="contrast-score">⚡ {contrast_score * 100:.0f}% Opposition</span>
                             </div>
+                            <h3 class="counter-title">{counter.get('title', 'Untitled')}</h3>
                             <p class="counter-content">{counter.get('content', '')}</p>
-                            <p class="counter-reference">📚 {counter.get('source_reference', 'General reference')}</p>
-                        </div>
                         """, unsafe_allow_html=True)
                         
-                        # =============================================================================
-                        # V2.2 HYBRID LAYOUT: VIDEO + ACADEMIC TEXT
-                        # =============================================================================
+                        # Academic Insight Section
+                        academic_text = counter.get('academic_insight', '')
+                        source_link = counter.get('source_link', '')
                         
+                        if academic_text:
+                            st.markdown(f"""
+                            <div class="academic-section">
+                                <div class="academic-label">🏛️ Academic Perspective</div>
+                                <div class="academic-text">"{academic_text}"</div>
+                                {f'<a href="{source_link}" target="_blank" class="academic-link">📚 View Academic Source →</a>' if source_link else ''}
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                        # Verified Videos Section
                         suggested_videos = counter.get('suggested_videos', [])
-                        academic_text = counter.get('academic_insight', "Academic perspective generating...")
-                        import html # Import globally for this block
                         
-                        # 2-Column Split
-                        h_col1, h_col2 = st.columns([1, 1], gap="medium")
-                        
-                        # --- LEFT COLUMN: TOP VIDEO SOURCE ---
-                        with h_col1:
-                            st.markdown("#### 📺 Verified Video Source")
-                            if suggested_videos:
-                                video = suggested_videos[0] # Take top 1
-                                
-                                # Metadata Calculation
+                        if suggested_videos:
+                            st.markdown(f"""
+                            <div class="videos-section">
+                                <div class="videos-label">📺 Verified Sources ({len(suggested_videos)})</div>
+                            """, unsafe_allow_html=True)
+                            
+                            for video in suggested_videos:
                                 relevance = video.get('relevance_score', 0.5)
                                 if relevance >= 0.85:
-                                    badge_class, badge_text = "relevance-high", "HIGH"
+                                    badge_class, badge_text = "relevance-high", "HIGH RELEVANCE"
                                 elif relevance >= 0.7:
-                                    badge_class, badge_text = "relevance-medium", "GOOD"
+                                    badge_class, badge_text = "relevance-medium", "GOOD RELEVANCE"
                                 else:
-                                    badge_class, badge_text = "relevance-low", "LOW"
+                                    badge_class, badge_text = "relevance-low", "MODERATE"
                                 
-                                # Duration & Views
+                                # Format duration
                                 duration = video.get('duration')
                                 if duration:
                                     mins, secs = divmod(duration, 60)
@@ -776,90 +625,76 @@ if analyze_button:
                                 else:
                                     duration_str = "N/A"
                                 
+                                # Format views
                                 views = video.get('view_count', 0)
-                                if views >= 1000000: views_str = f"{views/1000000:.1f}M"
-                                elif views >= 1000: views_str = f"{views/1000:.1f}K"
-                                else: views_str = str(views)
+                                if views >= 1000000:
+                                    views_str = f"{views/1000000:.1f}M"
+                                elif views >= 1000:
+                                    views_str = f"{views/1000:.1f}K"
+                                else:
+                                    views_str = str(views)
                                 
-                                thumbnail_url = video.get('thumbnail', '')
-                                channel = video.get('channel_name', 'Unknown Channel')
-
-                                # Render Card (Construct HTML first to ensure valid DOM)
-                                safe_title = html.escape(video.get('title', 'Untitled Video'))
-                                safe_channel = html.escape(channel)
-                                safe_badge_text = html.escape(badge_text)
-                                safe_views_str = html.escape(views_str)
-                                safe_duration_str = html.escape(duration_str)
+                                thumbnail = video.get('thumbnail', '')
                                 
-                                card_html = f'<div class="video-card">'
-                                
-                                if thumbnail_url:
-                                    # Ensure URL is safe (basic check, usually fine from youtube)
-                                    safe_thumb = thumbnail_url.replace('"', '&quot;')
-                                    card_html += f"""<div class="video-thumbnail-container"><img src="{safe_thumb}" class="video-thumbnail" alt="Video thumbnail"><div class="relevance-badge {badge_class}">✓ {safe_badge_text}</div><div class="video-metadata-overlay"><span>⏱️ {safe_duration_str}</span><span>👁️ {safe_views_str} views</span></div></div>"""
-                                
-                                card_html += f"""<div class="video-content"><div class="video-title">{safe_title}</div><div class="video-channel">📺 {safe_channel}</div><div class="video-stats">Relevance Score: {relevance * 100:.0f}%</div><a href="{video.get('url', '#')}" target="_blank" class="video-link">▶️ Watch Now</a></div></div>"""
-                                
-                                st.markdown(card_html, unsafe_allow_html=True)
-                                
-                            else:
-                                st.info("⚠️ No high-quality video source found for this specific angle.")
-
-                        # --- RIGHT COLUMN: ACADEMIC INSIGHT ---
-                        with h_col2:
-                            st.markdown("#### 🏛️ Academic Perspective")
+                                st.markdown(f"""
+                                <div class="video-card">
+                                    {f'<img src="{thumbnail}" class="video-thumbnail" alt="Video thumbnail">' if thumbnail else ''}
+                                    <div class="video-content">
+                                        <div class="video-title-card">{video.get('title', 'Untitled')}</div>
+                                        <div class="video-meta">
+                                            📺 {video.get('channel_name', 'Unknown')} • 
+                                            ⏱️ {duration_str} • 
+                                            👁️ {views_str}
+                                        </div>
+                                        <span class="relevance-badge {badge_class}">✓ {badge_text} ({relevance * 100:.0f}%)</span>
+                                        <br><br>
+                                        <a href="{video.get('url', '#')}" target="_blank" class="video-link">
+                                            ▶️ Watch on YouTube
+                                        </a>
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
                             
-                            safe_academic_text = html.escape(academic_text)
-                            safe_query = html.escape(counter.get('youtube_query', 'N/A'))
-                            
-                            # Compact HTML to prevent markdown code block rendering
-                            academic_html = f"""<div style="background: var(--slate-800); border: 1px solid var(--slate-700); border-radius: 0.75rem; padding: 1.5rem; height: 100%; border-left: 4px solid var(--blue);"><div style="color: var(--text-secondary); font-style: italic; font-size: 1.05rem; line-height: 1.8; margin-bottom: 1rem;">"{safe_academic_text}"</div><div style="display: flex; gap: 0.75rem; flex-wrap: wrap;"><span style="background: var(--slate-700); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; color: var(--text-primary);">🔬 Research Theory</span><span style="background: var(--slate-700); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; color: var(--text-primary);">🎓 Verified Context</span></div></div>"""
-                            st.markdown(academic_html, unsafe_allow_html=True)
-                            
-                            st.caption(f"_Search Query: \"{safe_query}\"_")
+                            st.markdown("</div>", unsafe_allow_html=True)
+                        else:
+                            st.info("⚠️ No high-quality sources found for this counter-perspective.")
                         
+                        st.markdown("</div>", unsafe_allow_html=True)
                         st.markdown("<br>", unsafe_allow_html=True)
                 
                 else:
                     st.warning("No counter-arguments generated.")
                 
-                # =============================================================================
-                # EXPORT FUNCTIONALITY
-                # =============================================================================
+                # Export
                 st.markdown("---")
-                st.markdown("### 📥 Export Report")
-                
-                export_col1, export_col2 = st.columns(2)
-                
-                with export_col1:
-                    json_data = json.dumps(data, indent=2)
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    st.download_button(
-                        label="📄 Download JSON Report",
-                        data=json_data,
-                        file_name=f"echobreaker_report_{timestamp}.json",
-                        mime="application/json"
-                    )
-                
-                with export_col2:
-                    st.info("💡 JSON export includes all analysis data, claims, counter-arguments, and video metadata.")
+                st.markdown("### 📥 Export Analysis")
+                json_data = json.dumps(data, indent=2)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.download_button(
+                    label="📄 Download Full Report (JSON)",
+                    data=json_data,
+                    file_name=f"echobreaker_analysis_{timestamp}.json",
+                    mime="application/json"
+                )
             
             else:
-                st.error(f"❌ Error: {response.status_code} - {response.text}")
+                st.error(f"❌ Error: {response.status_code}")
         
         except requests.exceptions.Timeout:
-            st.error("⏱️ Request timed out. The video may be too long or the AI processing is taking longer than expected.")
+            st.error("⏱️ Request timed out.")
         except requests.exceptions.ConnectionError:
-            st.error("🔌 Cannot connect to backend. Ensure the API is running at http://localhost:8000")
+            st.error("🔌 Cannot connect to API.")
         except Exception as e:
             st.error(f"❌ Error: {str(e)}")
 
 # Footer
 st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
-    <p style="font-size: 1.1rem;"><strong>EchoBreaker V2.0</strong> | Intelligence Dashboard</p>
-    <p style="font-size: 0.9rem;">Built with Responsible AI Principles | Powered by Whisper + Llama 3</p>
-    <p style="font-size: 0.8rem; color: var(--text-tertiary);">Semantic Contrast Enforcement • Dual-Pass Verification • Source Authority</p>
+<div style="text-align: center; color: #64748b; padding: 2rem;">
+    <p style="font-size: 1rem;"><strong>EchoBreaker</strong> | Breaking Algorithmic Echo Chambers</p>
+    <p style="font-size: 0.85rem;">We don't tell you what to think. We show you what else to think about.</p>
+    <p style="font-size: 0.75rem; color: #475569;">
+        100% Local • Privacy-First • Open Source<br>Powered by Whisper + Llama 3
+    </p>
 </div>
 """, unsafe_allow_html=True)
