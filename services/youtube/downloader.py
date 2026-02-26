@@ -1,7 +1,8 @@
 import os
 import yt_dlp
-from typing import Tuple, Dict, Any
+from typing import Tuple, Optional
 from yt_dlp.utils import download_range_func
+from models.analysis_result import VideoMetadata
 
 class YouTubeDownloader:
     def __init__(self, output_dir: str = "temp_audio"):
@@ -21,7 +22,9 @@ class YouTubeDownloader:
             return None
 
     def _format_duration(self, seconds: int) -> str:
-        if not seconds: return "00:00"
+        """Format duration as HH:MM:SS or MM:SS."""
+        if not seconds: 
+            return "00:00"
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
         if h > 0:
@@ -29,7 +32,9 @@ class YouTubeDownloader:
         return f"{m:02d}:{s:02d}"
 
     def _format_views(self, views: int) -> str:
-        if not views: return "0"
+        """Format view count as 1.5M, 250K, etc."""
+        if not views: 
+            return "0"
         if views >= 1_000_000:
             return f"{views/1_000_000:.1f}M"
         elif views >= 1_000:
@@ -37,14 +42,15 @@ class YouTubeDownloader:
         return str(views)
 
     def _format_date(self, date_str: str) -> str:
+        """Format YYYYMMDD to DD.MM.YYYY."""
         if not date_str or len(date_str) != 8:
-            return date_str
+            return date_str or "Unknown"
         return f"{date_str[6:8]}.{date_str[4:6]}.{date_str[0:4]}"
 
-    def download_audio_with_metadata(self, url: str) -> Tuple[str, Dict[str, Any]]:
+    def download_audio_with_metadata(self, url: str) -> Tuple[str, Optional[VideoMetadata]]:
         """
-        Downloads audio and returns the file path along with video metadata.
-        Renamed to match main.py expectations.
+        Downloads audio and returns (file_path, VideoMetadata).
+        Compatible with main.py expectations.
         """
         ffmpeg_location = self._get_ffmpeg_path()
         
@@ -53,7 +59,8 @@ class YouTubeDownloader:
             'outtmpl': os.path.join(self.output_dir, '%(id)s.%(ext)s'),
             'quiet': True,
             'no_warnings': True,
-            # Limit download to first 5 minutes (300s) for performance
+            'ignoreerrors': True,
+            # Limit to first 5 minutes for speed
             'download_ranges': download_range_func(None, [(0, 300)]),
             'force_keyframes_at_cuts': True,
             'postprocessors': [{
@@ -68,32 +75,37 @@ class YouTubeDownloader:
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                # Extract info and download
                 info = ydl.extract_info(url, download=True)
-                video_id = info.get('id')
                 
-                # After post-processing, the file will be .wav
+                if not info:
+                    raise Exception("Could not extract video information")
+                
+                video_id = info.get('id')
                 final_path = os.path.abspath(os.path.join(self.output_dir, f"{video_id}.wav"))
                 
                 if not os.path.exists(final_path):
-                    raise FileNotFoundError(f"Audio file could not be created: {final_path}")
+                    raise FileNotFoundError(f"Audio file not created: {final_path}")
 
-                # Prepare metadata dictionary for the UI
-                metadata = {
-                    "title": info.get('title', 'Unknown Title'),
-                    "channel": info.get('uploader') or info.get('channel', 'Unknown'),
-                    "duration_formatted": self._format_duration(info.get('duration', 0)),
-                    "view_count_formatted": self._format_views(info.get('view_count', 0)),
-                    "upload_date": self._format_date(info.get('upload_date', '')),
-                    "thumbnail": info.get('thumbnail', None),
-                    "description": info.get('description', '')[:500],
-                    "view_count": info.get('view_count', 0),
-                    "duration": info.get('duration', 0)
-                }
+                # Get raw values
+                duration_raw = info.get('duration', 0)
+                views_raw = info.get('view_count', 0)
 
-                print(f"Successfully downloaded: {metadata['title']}")
+                # Create VideoMetadata with BOTH formatted and raw values
+                metadata = VideoMetadata(
+                    video_title=info.get('title', 'Unknown Title'),
+                    channel_name=info.get('uploader') or info.get('channel', 'Unknown'),
+                    duration=self._format_duration(duration_raw),
+                    duration_seconds=duration_raw,  # NEW: Raw seconds
+                    view_count=self._format_views(views_raw),
+                    view_count_raw=views_raw,  # NEW: Raw integer
+                    upload_date=self._format_date(info.get('upload_date', '')),
+                    thumbnail=info.get('thumbnail'),
+                    description=info.get('description', '')[:500] if info.get('description') else None
+                )
+
+                print(f"✅ Downloaded: {metadata.video_title}")
                 return final_path, metadata
 
         except Exception as e:
-            print(f"Download Error: {str(e)}")
+            print(f"❌ Download Error: {str(e)}")
             raise e

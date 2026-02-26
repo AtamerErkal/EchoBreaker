@@ -5,8 +5,10 @@ class VideoMetadata(BaseModel):
     """Details about the original YouTube video."""
     video_title: str = "Unknown Title"
     channel_name: str = "Unknown Channel"
-    duration: str = "00:00"
-    view_count: str = "0"
+    duration: str = "00:00"  # Formatted string (HH:MM:SS or MM:SS)
+    duration_seconds: Optional[int] = None  # NEW: Raw seconds for calculations
+    view_count: str = "0"  # Formatted string (1.5M, 250K, etc.)
+    view_count_raw: Optional[int] = None  # NEW: Raw integer for calculations
     upload_date: str = "Unknown"
     thumbnail: Optional[str] = None
     description: Optional[str] = None
@@ -29,9 +31,9 @@ class VideoSuggestion(BaseModel):
     title: str
     url: str
     thumbnail: Optional[str] = None
-    duration: Optional[int] = None
+    duration: Optional[int] = None  # Seconds (int)
     channel_name: Optional[str] = None
-    view_count: Optional[str] = None  # String format (e.g., "1.5M")
+    view_count: Optional[int] = None  # Raw integer
     relevance_score: Optional[float] = None
     description: Optional[str] = None
 
@@ -43,19 +45,23 @@ class CounterArgument(BaseModel):
     source_reference: Optional[str] = None
     youtube_query: str = Field(..., description="Search query used to find counter-videos")
     suggested_videos: List[VideoSuggestion] = []
+    semantic_contrast_score: Optional[float] = None
     
     # Academic/Scientific Perspectives
     academic_insight: Optional[str] = Field(None, description="Detailed academic perspective (~150 words)")
-    academic_search_query: Optional[str] = Field(None, description="Optimized query for academic sources (e.g., Google Scholar)")
+    source_link: Optional[str] = Field(None, description="Academic source URL (Google Scholar, etc.)")
 
 class AnalysisResult(BaseModel):
     """The final structured analysis report."""
-    # Metadata Field (Crucial for fixing the ValueError in main.py)
+    video_url: str = ""
     video_metadata: Optional[VideoMetadata] = None
     
     # Analysis Details
     topic: str = Field(..., description="Short topic summary (3-5 words)")
     primary_claim: str = Field(..., description="The main argument presented in the video")
+    topic_summary: str = ""  # For backward compatibility
+    overall_sentiment: str = "neutral"
+    claims: List[ExtractedClaim] = []
     
     counter_arguments: List[CounterArgument] = []
     confidence_score: float = 0.0
