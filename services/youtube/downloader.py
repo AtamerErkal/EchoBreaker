@@ -60,9 +60,6 @@ class YouTubeDownloader:
             'quiet': True,
             'no_warnings': True,
             'ignoreerrors': True,
-            # Limit to first 5 minutes for speed
-            'download_ranges': download_range_func(None, [(0, 300)]),
-            'force_keyframes_at_cuts': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'wav', 
