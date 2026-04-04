@@ -1,10 +1,8 @@
 venv/
 __pycache__/
-*.mp4
-*.mp3
-*.wav
-models/whisper/
+*.pyc
 .env
+temp_audio/
 outputs/
 
 # Binary files
@@ -12,3 +10,17 @@ ffmpeg.exe
 ffplay.exe
 ffprobe.exe
 *.exe
+
+# Audio/Video temp files
+*.mp4
+*.mp3
+*.wav
+*.part
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Whisper cache
+models/whisper/

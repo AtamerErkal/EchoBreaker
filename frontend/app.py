@@ -426,8 +426,18 @@ with st.sidebar:
     """)
     
     st.markdown("---")
-    st.caption("Powered by Whisper + Llama 3")
-    st.caption("100% Local • 100% Private")
+    try:
+        health = requests.get("http://localhost:8000/", timeout=2).json()
+        provider = health.get("provider", "local")
+    except:
+        provider = "unknown"
+
+    if provider == "azure":
+        st.caption("Powered by Azure OpenAI + Azure Speech")
+        st.caption("Cloud-Accelerated • Fast Analysis")
+    else:
+        st.caption("Powered by Whisper + Llama 3")
+        st.caption("100% Local • 100% Private")
 
 # =============================================================================
 # MAIN CONTENT
@@ -694,7 +704,7 @@ st.markdown("""
     <p style="font-size: 1rem;"><strong>EchoBreaker</strong> | Breaking Algorithmic Echo Chambers</p>
     <p style="font-size: 0.85rem;">We don't tell you what to think. We show you what else to think about.</p>
     <p style="font-size: 0.75rem; color: #475569;">
-        100% Local • Privacy-First • Open Source<br>Powered by Whisper + Llama 3
+        Privacy-First • Open Source • Azure + Local Hybrid
     </p>
 </div>
 """, unsafe_allow_html=True)
