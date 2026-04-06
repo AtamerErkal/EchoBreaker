@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="images/echobreaker_logo.png" alt="EchoBreaker" width="120"/>
+<img src="images/echobreaker_logo.png" alt="EchoBreaker" width="200"/>
 
 # EchoBreaker
 
