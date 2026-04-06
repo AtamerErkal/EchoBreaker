@@ -27,14 +27,14 @@ class VideoSuggestion(BaseModel):
 
 class CounterArgument(BaseModel):
     type: str = Field(..., description="Ethical, Empirical, or Logical")
-    title: str
-    content: str
-    source_reference: Optional[str] = None
-    youtube_query: str = Field(..., description="Search query for counter-videos")
+    title: str = Field(..., description="Punchy title, under 10 words")
+    key_point: str = Field(..., description="2 sentences max")
+    why_it_matters: str = Field("", description="1 sentence, real-world impact")
+    academic_ref: str = Field("", description="Author, Work (Year)")
+    youtube_query: str = Field("", description="Search terms for YouTube")
+    youtube_search_url: Optional[str] = None
+    scholar_search_url: Optional[str] = None
     suggested_videos: List[VideoSuggestion] = []
-    semantic_contrast_score: Optional[float] = None
-    academic_insight: Optional[str] = None
-    source_link: Optional[str] = None
 
 
 class AnalysisResult(BaseModel):
@@ -42,7 +42,7 @@ class AnalysisResult(BaseModel):
     video_metadata: Optional[VideoMetadata] = None
     topic: str = Field(..., description="3-5 word topic summary")
     primary_claim: str = Field(..., description="Main argument of the video")
-    overall_sentiment: str = "neutral"
+    echo_chamber_query: str = Field("", description="Search terms that would reinforce the video's viewpoint")
+    echo_chamber_description: str = Field("", description="1 sentence explaining what the algorithm would keep showing")
     counter_arguments: List[CounterArgument] = []
     confidence_score: float = 0.0
-    processed_at: Optional[str] = None

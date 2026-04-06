@@ -1,104 +1,91 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from typing import List
 import os
 from core.config import Config
-from models.analysis_result import AnalysisResult
-from services.youtube.downloader import YouTubeDownloader
-from services.audio.transcription import create_transcription_service
+from models.analysis_result import AnalysisResult, VideoSuggestion
+from services.youtube.downloader import YouTubeExtractor
 from services.reasoning.generator import create_reasoning_engine
 from services.search.youtube_search import SearchService
 
-app = FastAPI(title="EchoBreaker API", version="3.0.0")
+app = FastAPI(title="EchoBreaker API", version="5.0.0")
 
 # Initialize Services
 try:
-    print(f"Initializing EchoBreaker Services (provider: {Config.PROVIDER})...")
-    yt_downloader = YouTubeDownloader()
-    transcriber = create_transcription_service()
+    print(f"Initializing EchoBreaker (provider: {Config.PROVIDER})...")
+    extractor = YouTubeExtractor()
     reasoner = create_reasoning_engine()
     searcher = SearchService()
-    print("Services initialized.")
+    print("Ready.")
 except Exception as e:
-    print(f"Failed to initialize services: {e}")
+    print(f"Failed to initialize: {e}")
+
 
 class AnalyzeRequest(BaseModel):
     video_url: str
 
-@app.post("/analyze", response_model=AnalysisResult)
-async def analyze_video(request: AnalyzeRequest, background_tasks: BackgroundTasks):
+
+class SearchSourcesRequest(BaseModel):
+    youtube_query: str
+
+
+@app.post("/api/analyze", response_model=AnalysisResult)
+async def analyze_video(request: AnalyzeRequest):
     """
-    EchoBreaker pipeline:
-    1. Download Audio + Extract Metadata (yt-dlp)
-    2. Transcribe (Azure Speech or Whisper)
-    3. Analyze & Generate Counter-Arguments (Azure OpenAI or Ollama)
-    4. Search & Verify Counter-Sources (yt-dlp + dual-pass)
+    Fast pipeline (~5 seconds):
+    1. Extract captions + metadata (yt-dlp, no download)
+    2. Analyze with LLM (Azure OpenAI or Ollama)
     """
-    temp_file = None
     try:
-        # 1. Download + Extract Metadata
-        print(f"[1/4] Downloading: {request.video_url}")
-        temp_file, video_metadata = yt_downloader.download_audio_with_metadata(request.video_url)
+        print(f"[1/2] Extracting: {request.video_url}")
+        transcript, metadata = extractor.extract(request.video_url)
 
-        # 2. Transcribe
-        print("[2/4] Transcribing...")
-        transcript = await transcriber.transcribe_file(temp_file)
-        if not transcript:
-            raise HTTPException(status_code=400, detail="Could not transcribe audio.")
-
-        # 3. Analyze
-        print("[3/4] Analyzing arguments...")
+        print(f"[2/2] Analyzing ({len(transcript)} chars)...")
         result = reasoner.generate_analysis(transcript, request.video_url)
-        result.video_metadata = video_metadata
+        result.video_metadata = metadata
 
-        # 4. Search + Verify
-        print("[4/4] Searching for counter-sources...")
-        import asyncio
-
-        async def process_counter_argument(argument):
-            if not argument.youtube_query:
-                return
-            try:
-                suggestions = await searcher.search_videos(argument.youtube_query, limit=3)
-                verified = []
-                for video in suggestions:
-                    verification = reasoner.verify_relevance(
-                        counter_argument_content=argument.content,
-                        video_title=video.title,
-                        video_description=video.description or "",
-                    )
-                    score = verification.get("score", 0.5)
-                    if verification.get("verdict") == "accept" and score >= 0.7:
-                        video.relevance_score = score
-                        verified.append(video)
-
-                verified.sort(key=lambda v: v.relevance_score or 0, reverse=True)
-                argument.suggested_videos = verified[:3]
-            except Exception as e:
-                print(f"  Search failed for '{argument.youtube_query}': {e}")
-
-        await asyncio.gather(*(process_counter_argument(arg) for arg in result.counter_arguments))
-
-        print("Pipeline complete.")
+        print("Done.")
         return result
 
-    except HTTPException:
-        raise
     except Exception as e:
         import traceback
         print(f"Pipeline error: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if temp_file and os.path.exists(temp_file):
-            try:
-                os.remove(temp_file)
-            except Exception:
-                pass
 
-@app.get("/")
+
+@app.post("/api/search-sources", response_model=List[VideoSuggestion])
+async def search_sources(request: SearchSourcesRequest):
+    """Lazy source loading - called when user clicks 'Explore Sources'."""
+    try:
+        results = await searcher.search_videos(request.youtube_query, limit=3)
+        return results
+    except Exception as e:
+        print(f"Search error: {e}")
+        return []
+
+
+@app.get("/api/health")
 def health_check():
     return {
-        "status": "EchoBreaker API is operational",
-        "version": "3.0.0",
+        "status": "operational",
+        "version": "5.0.0",
         "provider": Config.PROVIDER,
     }
+
+
+# Serve frontend
+ROOT_DIR     = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
+IMAGES_DIR   = os.path.join(ROOT_DIR, "images")
+
+@app.get("/")
+async def serve_index():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index_v3.html"))
+
+# Static files - mount AFTER specific routes
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
+app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")

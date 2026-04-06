@@ -1,22 +1,15 @@
-# Core
+﻿# Core
 fastapi
 uvicorn
 pydantic
 python-dotenv
-requests
 
-# YouTube & Audio
+# YouTube caption extraction
 yt-dlp
-ffmpeg-python
 
-# Azure (cloud provider)
+# LLM providers
 openai
+groq
+
+# Azure Speech (optional)
 azure-cognitiveservices-speech
-
-# Local fallback
-openai-whisper
-ollama
-torch
-
-# Frontend
-streamlit
