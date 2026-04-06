@@ -1,441 +1,285 @@
-# 🛡️ EchoBreaker
+<div align="center">
 
-### Breaking Algorithmic Echo Chambers Through Intellectual Diversity
+<img src="images/echobreaker_logo.png" alt="EchoBreaker" width="120"/>
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-red.svg)](https://streamlit.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+# EchoBreaker
 
-> **"The algorithm shows you what you want to see. We show you what you need to consider."**
+### *"The algorithm shows you what you want to see. We show you what you need to consider."*
 
----
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-GPT--5.4_Mini-0078D4?style=flat-square&logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+[![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-F55036?style=flat-square)](https://groq.com/)
+[![EU AI Act](https://img.shields.io/badge/EU_AI_Act-Aligned-f59e0b?style=flat-square)](https://artificialintelligenceact.eu/)
+[![License](https://img.shields.io/badge/License-MIT-6366f1?style=flat-square)](LICENSE)
 
-## 🎯 The Problem
+**Responsible AI · Counter-Perspective Engine · Filter Bubble Detection**
 
-Modern content platforms like YouTube, Twitter, and TikTok use recommendation algorithms optimized for engagement. While this improves user experience, it creates an unintended consequence: **algorithmic echo chambers**.
+[Live Demo](#) · [Responsible AI Framework](RESPONSIBLE_AI.md) · [Report an Issue](https://github.com/AtamerErkal/EchoBreaker/issues)
 
-### How Echo Chambers Form
-
-1. **You watch** a video expressing viewpoint A
-2. **The algorithm learns** you're interested in topic X
-3. **You get recommended** 10 more videos supporting viewpoint A
-4. **Your beliefs strengthen** - not because you evaluated alternatives, but because you never saw them
-5. **Society polarizes** - we live in parallel information universes
-
-This isn't YouTube's fault. It's an inherent challenge in engagement-optimized systems.
-
-### The Impact
-
-- **Individual Level**: Reduced critical thinking, confirmation bias reinforcement
-- **Social Level**: Political polarization, decreased empathy for opposing views
-- **Democratic Level**: Citizens making decisions based on incomplete information
-
-**EchoBreaker addresses this by surfacing the strongest counter-perspectives you're not algorithmically seeing.**
+</div>
 
 ---
 
-## 💡 Our Solution
+## 🔴 Problem
 
-EchoBreaker is **not** a criticism of YouTube. It's a complementary tool that helps users:
+Recommendation algorithms are not neutral. They are optimized for **engagement** — and engagement means showing you more of what you already believe.
 
-✅ **Discover** perspectives the algorithm doesn't show  
-✅ **Understand** the strongest counter-arguments to any viewpoint  
-✅ **Think critically** by seeing multiple sides before forming opinions  
-✅ **Reduce polarization** through exposure to intellectual diversity
+Every time you watch a video, the algorithm learns your preferences and narrows your next recommendations. Over weeks and months, this creates an **algorithmic echo chamber**: a self-reinforcing loop where only one perspective is amplified, opposing viewpoints disappear, and your information diet quietly becomes a monologue.
 
-### Core Philosophy
+This is not malicious. It's a structural consequence of engagement-optimized systems — and it happens invisibly.
 
-**We don't tell you what to think. We show you what else to think about.**
-
-- If you watch a pro-climate-action video → We find the best economic cost-benefit analyses
-- If you watch a free-market economics video → We find the strongest social welfare arguments
-- If you watch a privacy-focused tech video → We find authoritative security trade-off discussions
-
-**The goal: Make you less certain, more curious, and better informed.**
+**The result:**
+- 🧠 Confirmation bias becomes the default mode of information consumption
+- 📉 Exposure to opposing arguments drops to near zero
+- 🌍 Society fragments into parallel information universes that rarely intersect
 
 ---
 
-## ✨ How It Works
+## 🟢 Solution
 
-### 1. Analysis Pipeline
+EchoBreaker is a **Responsible AI tool** that intercepts this loop.
 
-```
-YouTube URL → Audio Extraction → Whisper Transcription → 
-Llama 3 Analysis → Counter-Perspective Generation → 
-Source Discovery → Quality Verification
-```
+Paste a YouTube URL — or search any topic directly. In **~5 seconds**, EchoBreaker extracts the video's captions (no audio download, no transcription delay), sends them to an LLM, and generates three structured counter-perspectives:
 
-### 2. Three-Dimensional Opposition
+| Dimension | What it challenges |
+|---|---|
+| 🟣 **Ethical** | The moral assumptions and value trade-offs behind the argument |
+| 🔵 **Empirical** | The data, research, and evidence the video doesn't show you |
+| 🟡 **Logical** | The reasoning gaps, causal fallacies, or structural blind spots |
 
-For every analyzed video, we generate counter-arguments across:
+Alongside the counter-arguments, EchoBreaker shows you a **side-by-side comparison**: what the algorithm *would have recommended next* vs. what genuine intellectual diversity looks like.
 
-**🔹 Ethical Dimension**  
-Moral frameworks and value trade-offs opposing the video's stance  
-*Example: Individual liberty vs. collective security perspectives*
-
-**🔹 Empirical Dimension**  
-Data, research, and evidence contradicting the video's claims  
-*Example: Studies showing different statistical correlations*
-
-**🔹 Logical Dimension**  
-Reasoning flaws, alternative causal models, or structural critiques  
-*Example: Correlation vs. causation fallacies in arguments*
-
-### 3. Quality Assurance
-
-**Semantic Contrast Enforcement**  
-Counter-arguments must score **0.7-1.0** on opposition scale. We reject:
-- ❌ Tangentially related content
-- ❌ Strawman arguments
-- ❌ Weak opposing views
-
-**Dual-Pass Verification**  
-Every suggested video goes through:
-1. **Academic-style search** → Queries target news, research, documentaries
-2. **Relevance verification** → AI scores each video 0.0-1.0 on relevance
-3. **Quality filtering** → Clickbait rejection, authority scoring
-
-**Only sources scoring ≥0.7 are shown.**
-
-### 4. Privacy-First Design
-
-**Everything runs locally:**
-- No data sent to external APIs
-- No user tracking or analytics
-- Complete control over your information
-
-**Technologies:**
-- Whisper AI (local transcription)
-- Llama 3 via Ollama (local analysis)
-- yt-dlp (direct YouTube metadata access)
+> **We don't tell you what to think. We show you what else to think about.**
 
 ---
 
-## 🚀 Installation & Usage
+## 🟣 Impact
 
-### Prerequisites
+Users gain immediate exposure to the **strongest opposing arguments** they would never have encountered organically.
 
-```bash
-# 1. Install Ollama
-# Download from https://ollama.com/
-ollama pull llama3:8b
+The effect is not correction — it is expansion. A user who watches a video on economic nationalism doesn't need to be told they're wrong. They need to encounter the most compelling case for open markets, articulated at its best. EchoBreaker delivers exactly that.
 
-# 2. Install FFmpeg
-# macOS: brew install ffmpeg
-# Ubuntu: sudo apt-get install ffmpeg
-# Windows: Download from https://ffmpeg.org/
-
-# 3. Python 3.8+
-python --version
-```
-
-### Setup
-
-```bash
-# Clone repository
-git clone https://github.com/AtamerErkal/EchoBreaker.git
-cd EchoBreaker
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Optional: Configure environment
-cp .env.template .env
-```
-
-### Run the Dashboard
-
-```bash
-# Start Streamlit interface
-streamlit run frontend/app.py
-
-# Open browser to http://localhost:8501
-```
-
-### Example Analysis
-
-**Input:** `https://www.youtube.com/watch?v=example`
-
-**Output:**
-- **Topic Summary**: AI-generated overview of video's thesis
-- **Extracted Claims**: Key arguments and assertions
-- **Counter-Arguments** (3 types):
-  - Ethical: Alternative moral frameworks
-  - Empirical: Contradicting research/data
-  - Logical: Reasoning critiques
-- **Verified Sources**: High-quality videos presenting opposing views
-- **Academic Context**: Scholarly perspective for each counter-argument
-
-**Processing Time:** 50-90 seconds for a 10-minute video
+- **For individuals:** Break out of your filter bubble without abandoning your views
+- **For students & educators:** Build critical thinking and media literacy through structured multi-perspective analysis
+- **For researchers & journalists:** Surface authoritative counter-sources in seconds, not hours
+- **For society:** Reduce polarization by creating friction against epistemic closure — one video at a time
 
 ---
 
-## 🏗️ Architecture
+## ⚡ How It Works
 
-### System Design
+```
+User Input (URL or Topic Search)
+         │
+         ▼
+  YouTube Caption Extraction          ← yt-dlp, no audio download (~1s)
+         │
+         ▼
+  LLM Analysis (Azure OpenAI / Groq)  ← Structured JSON prompt (~3-4s)
+         │
+         ├─ topic & primary_claim
+         ├─ echo_chamber_query        ← What the algorithm would show next
+         ├─ echo_chamber_description
+         └─ counter_arguments [×3]
+              ├─ Ethical
+              ├─ Empirical
+              └─ Logical
+
+         ▼
+  Results rendered in browser         ← Total: ~5 seconds
+```
+
+### Dual-Provider Architecture
+
+Switch between providers with a single environment variable:
+
+```env
+PROVIDER=azure   # Azure OpenAI (GPT-5.4 Mini) — production
+PROVIDER=groq    # Groq free tier (Llama 3.3 70B) — zero cost
+```
+
+No code changes. No redeploys. Both providers return identical output schemas.
+
+---
+
+## 🏗️ Project Structure
 
 ```
 EchoBreaker/
-├── frontend/app.py              # Streamlit dashboard
-├── api/main.py                  # FastAPI orchestration
+├── api/
+│   └── main.py                    # FastAPI — endpoints & static serving
+├── core/
+│   └── config.py                  # Provider selection & env config
 ├── services/
-│   ├── audio/transcription.py  # Whisper integration
-│   ├── reasoning/generator.py  # Llama 3 analysis
-│   ├── search/youtube_search.py # Source discovery
-│   └── youtube/downloader.py   # Audio extraction
-├── models/analysis_result.py   # Data schemas
-└── core/config.py              # Configuration
-```
-
-### Processing Flow
-
-```
-1. Audio Download (yt-dlp)         → 5-15 seconds
-2. Whisper Transcription           → 10-30 seconds (GPU)
-3. Llama 3 Analysis                → 15-30 seconds
-   ├─ Claim extraction
-   ├─ Sentiment analysis
-   ├─ Counter-argument generation
-   └─ Academic context creation
-4. YouTube Source Search           → 5-10 seconds
-5. Dual-Pass Verification          → 10-20 seconds
-6. Dashboard Rendering             → <1 second
-
-Total: 50-90 seconds
+│   ├── reasoning/
+│   │   └── generator.py           # AzureReasoningEngine | GroqReasoningEngine
+│   ├── search/
+│   │   └── youtube_search.py      # Lazy YouTube search (on-demand)
+│   └── youtube/
+│       └── downloader.py          # Caption extraction via yt-dlp
+├── models/
+│   └── analysis_result.py         # Pydantic v2 schemas
+├── frontend/
+│   └── index_v3.html              # Full-screen hero UI (Tailwind CSS)
+├── images/
+│   └── echobreaker_logo.png
+├── .env.template
+├── RESPONSIBLE_AI.md
+└── requirements.txt
 ```
 
 ---
 
-## ⚖️ Responsible AI Principles
+## 🚀 Quick Start
 
-### 1. Transparency
+### 1. Clone & Install
 
-We are **not** a black box:
-- ✅ 100% open-source code
-- ✅ Opposition scores visible (0.0-1.0 scale)
-- ✅ Verification reasons logged
-- ✅ No hidden algorithmic decisions
+```bash
+git clone https://github.com/AtamerErkal/EchoBreaker.git
+cd EchoBreaker
 
-### 2. Privacy Protection
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS/Linux
 
-Your data stays yours:
-- ✅ All processing local (Whisper + Llama 3)
-- ✅ No external API calls
-- ✅ No user tracking
-- ✅ Temporary files auto-deleted
+pip install -r requirements.txt
+```
 
-### 3. Intellectual Fairness
+### 2. Configure Environment
 
-We enforce genuine opposition:
-- ✅ Semantic contrast scoring (reject weak counters)
-- ✅ Three-dimensional analysis (Ethical, Empirical, Logical)
-- ✅ Academic grounding (scholarly context for each argument)
-- ✅ Quality filters (no clickbait, prioritize research/news)
+```bash
+cp .env.template .env
+```
 
-### 4. Platform Respect
+**Option A — Azure OpenAI:**
+```env
+PROVIDER=azure
+AZURE_OPENAI_API_KEY=your-key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT=gpt-54-mini
+AZURE_OPENAI_API_VERSION=2024-12-01-preview
+```
 
-We **complement**, not compete with YouTube:
-- ✅ Use public APIs (yt-dlp for metadata)
-- ✅ No scraping user data
-- ✅ No circumventing paywalls
-- ✅ Respect rate limits and Terms of Service
+**Option B — Groq (Free Tier):**
+```env
+PROVIDER=groq
+GROQ_API_KEY=gsk_...           # Free key at console.groq.com
+GROQ_MODEL=llama-3.3-70b-versatile
+```
 
-### 5. Human Agency
+### 3. Run
 
-AI assists, humans decide:
-- ✅ We present perspectives, not prescriptions
-- ✅ Confidence scores show AI certainty
-- ✅ Users evaluate and form their own opinions
-- ✅ Export functionality for further research
+```bash
+uvicorn api.main:app --reload
+```
 
----
-
-## 🎓 Use Cases
-
-### For Individuals
-**Problem:** Algorithm shows only one side of complex issues  
-**Solution:** See strongest counter-arguments before forming opinions
-
-### For Educators
-**Problem:** Students live in ideological bubbles  
-**Solution:** Teach critical thinking through multi-perspective analysis
-
-### For Researchers
-**Problem:** Media bias is hard to quantify  
-**Solution:** Measure semantic opposition and track polarization
-
-### For Journalists
-**Problem:** Balanced coverage requires finding diverse sources  
-**Solution:** Discover authoritative counter-perspectives efficiently
-
-### For Content Creators
-**Problem:** Unaware of blind spots in arguments  
-**Solution:** Self-assess and strengthen narratives with counter-awareness
+Open [http://localhost:8000](http://localhost:8000) — paste any YouTube URL or search a topic.
 
 ---
 
-## 🔧 Technology Stack
+## 🔌 API Reference
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Frontend** | Streamlit | Clean, professional dashboard |
-| **API** | FastAPI | Async orchestration layer |
-| **Speech Recognition** | Whisper (tiny) | Local audio transcription |
-| **Language Model** | Llama 3 (8B) | Semantic analysis & verification |
-| **LLM Runtime** | Ollama | Local inference engine |
-| **Video Processing** | yt-dlp + FFmpeg | Metadata & audio extraction |
-| **Data Validation** | Pydantic V2 | Type safety & schemas |
-| **Async Processing** | asyncio | Parallel search operations |
+| Endpoint | Method | Description |
+|---|---|---|
+| `/` | `GET` | Serves the frontend |
+| `/api/analyze` | `POST` | Analyzes a YouTube video URL |
+| `/api/search-sources` | `POST` | Searches YouTube by query (lazy, on-demand) |
+| `/api/health` | `GET` | Returns status and active provider |
 
-### Performance Characteristics
+**Example request:**
+```bash
+curl -X POST http://localhost:8000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"video_url": "https://www.youtube.com/watch?v=..."}'
+```
 
-- **Latency**: 50-90s for 10-min video
-- **Memory**: ~8GB RAM (Llama 3) + 2GB VRAM (Whisper tiny)
-- **GPU Acceleration**: 3x speedup for Whisper transcription
-- **Concurrent Users**: Single-user local deployment (scalable with queuing)
+**Example response:**
+```json
+{
+  "topic": "Universal Basic Income",
+  "primary_claim": "UBI would eliminate poverty without reducing work incentives.",
+  "echo_chamber_query": "UBI success stories basic income works",
+  "echo_chamber_description": "The algorithm would keep showing you positive UBI pilots, ignoring fiscal concerns.",
+  "counter_arguments": [
+    {
+      "type": "Ethical",
+      "title": "Unconditional Income Undermines Social Contribution",
+      "key_point": "...",
+      "why_it_matters": "...",
+      "academic_ref": "Mead, L. — The New Politics of Poverty (1992)",
+      "youtube_search_url": "https://youtube.com/results?search_query=...",
+      "scholar_search_url": "https://scholar.google.com/scholar?q=..."
+    }
+  ]
+}
+```
+
+---
+
+## ⚖️ Responsible AI
+
+EchoBreaker is designed from the ground up with Responsible AI principles — not as an afterthought.
+
+| Principle | Implementation |
+|---|---|
+| **Transparency** | Open-source, no hidden algorithmic decisions, full prompt visible in code |
+| **Privacy** | Zero data stored, no cookies, no user tracking, captions discarded after analysis |
+| **Fairness** | Three-dimensional analysis prevents any single ideological bias from dominating |
+| **Human Agency** | Counter-perspectives are invitations, not prescriptions — users decide |
+| **EU AI Act** | Aligned with transparency and human oversight requirements |
+| **Accountability** | In-app feedback mechanism; users can flag inaccuracies or harmful content |
+
+→ Read the full framework: [RESPONSIBLE_AI.md](RESPONSIBLE_AI.md)
 
 ---
 
 ## 🛣️ Roadmap
 
-### V2.1 (Current)
-- [x] Semantic contrast enforcement
-- [x] Dual-pass verification
-- [x] Academic insight generation
-- [x] Streamlit dashboard
-
-### V2.2 (In Development)
-- [ ] Multi-language support (Whisper multilingual)
-- [ ] Batch processing (analyze playlists)
+- [x] Caption-based pipeline (~5s, no audio download)
+- [x] Dual LLM provider (Azure OpenAI + Groq)
+- [x] Topic search mode (no URL required)
+- [x] Echo chamber comparison view
+- [x] Responsible AI feedback mechanism
 - [ ] Browser extension (analyze while watching)
-- [ ] PDF export (professional reports)
-
-### V3.0 (Planned)
-- [ ] Custom LLM integration (Mistral, GPT4All)
-- [ ] Historical tracking (see how perspectives evolved)
-- [ ] Collaborative filtering (crowdsourced quality ratings)
-- [ ] Mobile app (iOS/Android)
+- [ ] Multi-language caption support (DE, TR, FR)
+- [ ] Batch analysis (full playlists)
+- [ ] Shareable analysis links
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions that advance our mission of reducing polarization through technology.
-
-### Priority Areas
-
-1. **Prompt Engineering**: Improve counter-argument quality
-2. **Performance**: Optimize Whisper/Llama 3 inference
-3. **UI/UX**: Enhance dashboard clarity
-4. **Testing**: Add unit tests for services
-
-### Development Setup
+Contributions that advance the mission of reducing polarization through technology are welcome.
 
 ```bash
-# Fork and clone
-git clone https://github.com/YOUR_USERNAME/EchoBreaker.git
-cd EchoBreaker
+# Fork, clone, and create a branch
+git checkout -b feature/your-feature
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dev dependencies
-pip install -r requirements.txt
-pip install pytest black flake8
-
-# Make changes and submit PR
+# Make changes, then submit a PR
 ```
 
----
-
-## ❓ FAQ
-
-**Q: Is this anti-YouTube?**  
-A: No. We're grateful YouTube exists. We're addressing an inherent challenge in all engagement-optimized platforms.
-
-**Q: How do you ensure counter-arguments are high quality?**  
-A: Dual-pass verification: academic-style searches + AI relevance scoring (≥0.7 threshold).
-
-**Q: What if I disagree with a counter-argument?**  
-A: Perfect! The goal is exposure, not persuasion. Evaluate it yourself.
-
-**Q: Can this be used to spread misinformation?**  
-A: We prioritize authoritative sources (news, research, documentaries) and reject clickbait. But users should always verify.
-
-**Q: How long does analysis take?**  
-A: 50-90 seconds for a 10-minute video (varies by GPU/CPU).
-
-**Q: Can I use a different LLM?**  
-A: Yes! Edit `services/reasoning/generator.py` to integrate other Ollama models.
+**Priority areas:** prompt quality, new LLM providers, UI/UX improvements, multilingual support.
 
 ---
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) for details.
-
-You can use, modify, and distribute this freely, including commercially, as long as you include the original copyright notice.
-
----
-
-## ⚠️ Disclaimer
-
-**EchoBreaker is a research tool for promoting critical thinking.**
-
-We do **not**:
-- ❌ Claim to provide absolute truth
-- ❌ Replace professional fact-checking
-- ❌ Guarantee unbiased analysis
-- ❌ Endorse any viewpoint
-
-**Users should:**
-- ✅ Verify information from multiple sources
-- ✅ Form their own informed opinions
-- ✅ Understand AI limitations
-- ✅ Use this as one tool among many
-
-**Ethical Use:**  
-This tool is for educational, research, and journalistic purposes. Do not use it to generate misleading content, harass individuals, or violate platform Terms of Service.
-
----
-
-## 🙏 Acknowledgments
-
-- **YouTube** - For creating a platform enabling global knowledge sharing
-- **OpenAI** - Whisper model for speech recognition
-- **Meta AI** - Llama 3 for language understanding
-- **Ollama Team** - Making local LLMs accessible
-- **yt-dlp developers** - Robust YouTube integration
-- **The open-source community** - For democratizing AI
-
----
-
-## 📞 Contact
-
-- **Author**: Atamer Erkal
-- **GitHub**: [@AtamerErkal](https://github.com/AtamerErkal)
-- **Issues**: [Report bugs or request features](https://github.com/AtamerErkal/EchoBreaker/issues)
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-## 🎯 Our Mission
-
 **Break echo chambers. Reduce polarization. Enable informed citizenship.**
 
-One video at a time.
+*"The test of a first-rate intelligence is the ability to hold two opposed ideas in mind at the same time and still retain the ability to function."*
+— F. Scott Fitzgerald
 
 ---
 
-[![Star this repo](https://img.shields.io/github/stars/AtamerErkal/EchoBreaker?style=social)](https://github.com/AtamerErkal/EchoBreaker)
+[![GitHub Stars](https://img.shields.io/github/stars/AtamerErkal/EchoBreaker?style=social)](https://github.com/AtamerErkal/EchoBreaker)
 
-[⭐ Star](https://github.com/AtamerErkal/EchoBreaker) • [🐛 Report Bug](https://github.com/AtamerErkal/EchoBreaker/issues) • [💡 Request Feature](https://github.com/AtamerErkal/EchoBreaker/issues)
-
----
-
-*"The test of a first-rate intelligence is the ability to hold two opposed ideas in mind at the same time and still retain the ability to function."* — F. Scott Fitzgerald
+[⭐ Star this repo](https://github.com/AtamerErkal/EchoBreaker) · [🐛 Report Bug](https://github.com/AtamerErkal/EchoBreaker/issues) · [💡 Request Feature](https://github.com/AtamerErkal/EchoBreaker/issues)
 
 </div>
