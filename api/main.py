@@ -10,21 +10,23 @@ from services.youtube.downloader import YouTubeExtractor
 from services.reasoning.generator import create_reasoning_engine
 from services.search.youtube_search import SearchService
 
-app = FastAPI(title="EchoBreaker API", version="5.0.0")
+app = FastAPI(title="EchoBreaker API", version="5.1.0")
 
 # Initialize Services
+extractor = YouTubeExtractor()
+searcher = SearchService()
 try:
     print(f"Initializing EchoBreaker (provider: {Config.PROVIDER})...")
-    extractor = YouTubeExtractor()
     reasoner = create_reasoning_engine()
-    searcher = SearchService()
     print("Ready.")
 except Exception as e:
-    print(f"Failed to initialize: {e}")
+    print(f"Failed to initialize reasoning engine: {e}")
+    reasoner = None
 
 
 class AnalyzeRequest(BaseModel):
     video_url: str
+    language: str = "en"
 
 
 class SearchSourcesRequest(BaseModel):
@@ -36,14 +38,20 @@ async def analyze_video(request: AnalyzeRequest):
     """
     Fast pipeline (~5 seconds):
     1. Extract captions + metadata (yt-dlp, no download)
-    2. Analyze with LLM (Azure OpenAI or Ollama)
+    2. Analyze with LLM (Azure OpenAI or Groq)
     """
+    if reasoner is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Analysis engine not initialized. Check your .env configuration (AZURE_OPENAI_API_KEY or GROQ_API_KEY)."
+        )
+    
     try:
         print(f"[1/2] Extracting: {request.video_url}")
         transcript, metadata = extractor.extract(request.video_url)
 
         print(f"[2/2] Analyzing ({len(transcript)} chars)...")
-        result = reasoner.generate_analysis(transcript, request.video_url)
+        result = reasoner.generate_analysis(transcript, request.video_url, language=request.language)
         result.video_metadata = metadata
 
         print("Done.")
@@ -71,7 +79,7 @@ async def search_sources(request: SearchSourcesRequest):
 def health_check():
     return {
         "status": "operational",
-        "version": "5.0.0",
+        "version": "5.1.0",
         "provider": Config.PROVIDER,
     }
 
@@ -83,9 +91,8 @@ IMAGES_DIR   = os.path.join(ROOT_DIR, "images")
 
 @app.get("/")
 async def serve_index():
-    return FileResponse(os.path.join(FRONTEND_DIR, "index_v3.html"))
+    return FileResponse(os.path.join(FRONTEND_DIR, "index_v6.html"))
 
 # Static files - mount AFTER specific routes
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
-app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")

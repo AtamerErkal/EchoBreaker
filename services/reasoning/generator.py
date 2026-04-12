@@ -3,6 +3,12 @@ import urllib.parse
 from core.config import Config
 from models.analysis_result import AnalysisResult
 
+LANG_INSTRUCTION = {
+    "en": "",
+    "de": "\n\nIMPORTANT: Write ALL text fields (topic, primary_claim, echo_chamber_description, title, key_point, why_it_matters, academic_ref, youtube_query, echo_chamber_query) entirely in GERMAN (Deutsch). Do NOT use English in any field.",
+    "tr": "\n\nÖNEMLİ: Tüm metin alanlarını (topic, primary_claim, echo_chamber_description, title, key_point, why_it_matters, academic_ref, youtube_query, echo_chamber_query) tamamen TÜRKÇE yaz. Hiçbir alanda İngilizce kullanma.",
+}
+
 SYSTEM_PROMPT = """You are EchoBreaker, an AI that breaks algorithmic echo chambers.
 Analyze the transcript and generate sharp, concise counter-perspectives.
 
@@ -87,12 +93,13 @@ class AzureReasoningEngine:
         )
         self.deployment = Config.AZURE_OPENAI_DEPLOYMENT
 
-    def generate_analysis(self, transcript: str, video_url: str) -> AnalysisResult:
+    def generate_analysis(self, transcript: str, video_url: str, language: str = "en") -> AnalysisResult:
         try:
+            system = SYSTEM_PROMPT + LANG_INSTRUCTION.get(language, "")
             response = self.client.chat.completions.create(
                 model=self.deployment,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": system},
                     {"role": "user", "content": f"Transcript:\n{transcript[:20000]}"},
                 ],
                 response_format={"type": "json_object"},
@@ -129,12 +136,13 @@ class GroqReasoningEngine:
         self.client = Groq(api_key=Config.GROQ_API_KEY)
         self.model = Config.GROQ_MODEL
 
-    def generate_analysis(self, transcript: str, video_url: str) -> AnalysisResult:
+    def generate_analysis(self, transcript: str, video_url: str, language: str = "en") -> AnalysisResult:
         try:
+            system = SYSTEM_PROMPT + LANG_INSTRUCTION.get(language, "")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": system},
                     {"role": "user", "content": f"Transcript:\n{transcript[:20000]}"},
                 ],
                 response_format={"type": "json_object"},

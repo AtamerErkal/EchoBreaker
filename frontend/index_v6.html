@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoBreaker — Responsible AI for Critical Thinking</title>
+    <meta name="description"
+        content="Break algorithmic echo chambers. See counter-perspectives the algorithm isn't showing you.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        navy: { 900: '#060a14', 800: '#0a0f1a', 700: '#0f1623', 600: '#1e293b', 500: '#334155' },
+                        accent: { DEFAULT: '#10b981', light: '#6ee7b7', dark: '#059669' },
+                        ethical: { DEFAULT: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)' },
+                        empirical: { DEFAULT: '#3b82f6', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.2)' },
+                        logical: { DEFAULT: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)' },
+                        danger: { DEFAULT: '#ef4444', light: '#fca5a5', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.2)' },
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        /* ── Base ─────────────────────────────────────────────── */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #060a14;
+        }
+
+        /* ── Glassmorphism Foundation ────────────────────────── */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-subtle {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-tint-red {
+            background: rgba(239, 68, 68, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(239, 68, 68, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-tint-green {
+            background: rgba(16, 185, 129, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(16, 185, 129, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-tint-blue {
+            background: rgba(59, 130, 246, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        /* ── Mesh Gradient Animation ──────────────────────────── */
+        .mesh-gradient {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(at 20% 30%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 20%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+                radial-gradient(at 40% 80%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(167, 139, 250, 0.08) 0px, transparent 50%),
+                radial-gradient(at 10% 60%, rgba(6, 182, 212, 0.1) 0px, transparent 40%);
+            animation: meshMove 25s ease-in-out infinite;
+        }
+
+        @keyframes meshMove {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -20px) scale(1.05);
+            }
+            50% {
+                transform: translate(-20px, 30px) scale(0.98);
+            }
+            75% {
+                transform: translate(20px, 20px) scale(1.02);
+            }
+        }
+
+        /* ── Floating Orbs ──────────────────────────────────── */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(16, 185, 129, 0.3);
+            top: 10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(59, 130, 246, 0.25);
+            top: 20%;
+            right: -5%;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(239, 68, 68, 0.2);
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+        }
+
+        /* ── Word Stagger Animation ───────────────────────────── */
+        @keyframes wordUp {
+            from {
+                opacity: 0;
+                transform: translateY(32px);
+                filter: blur(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .word {
+            display: inline-block;
+            animation: wordUp 0.6s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        /* ── Logo Entrance ────────────────────────────────────── */
+        @keyframes logoIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(-10px);
+                filter: blur(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .logo-entrance {
+            animation: logoIn 0.9s cubic-bezier(.16, 1, .3, 1) 0.1s both;
+        }
+
+        /* ── CTA Pulse Ring ───────────────────────────────────── */
+        @keyframes pulseRing {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(1.55);
+                opacity: 0;
+            }
+        }
+
+        .pulse-ring::before,
+        .pulse-ring::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        .pulse-ring::after {
+            animation-delay: 1s;
+        }
+
+        /* ── Scroll Indicator ─────────────────────────────────── */
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(6px);
+                opacity: 1;
+            }
+        }
+
+        .scroll-indicator {
+            animation: scrollBounce 1.8s ease-in-out infinite;
+        }
+
+        /* ── General animations ───────────────────────────────── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+            }
+        }
+
+        .animate-fadeUp {
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease both;
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.4s ease both;
+        }
+
+        .animate-slideDown {
+            animation: slideDown 0.35s ease both;
+        }
+
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* ── Spinner ──────────────────────────────────────────── */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .spinner-sm {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        /* ── Misc ─────────────────────────────────────────────── */
+        .step-pulse .step-dot-inner {
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 
+                0 24px 48px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 40px rgba(16, 185, 129, 0.5), 0 0 80px rgba(16, 185, 129, 0.3);
+        }
+
+        .glow-accent {
+            box-shadow: 0 0 60px rgba(16, 185, 129, .15);
+        }
+
+        /* ── Custom Scrollbar ───────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(6, 10, 20, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            border: 2px solid rgba(6, 10, 20, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-focus:focus-within {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, .12), 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .mode-tab {
+            transition: all .2s ease;
+        }
+
+        .mode-tab.active {
+            background: rgba(16, 185, 129, .15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, .4);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .mode-tab:not(.active) {
+            color: #6b7280;
+            border-color: transparent;
+        }
+
+        .mode-tab:not(.active):hover {
+            color: #9ca3af;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .video-card {
+            transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .video-card:hover {
+            border-color: rgba(16, 185, 129, .4);
+            background: rgba(16, 185, 129, .05);
+            transform: translateX(4px);
+        }
+
+        .video-card:hover .analyze-btn {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .analyze-btn {
+            opacity: 0;
+            transform: translateX(8px);
+            transition: all .3s ease;
+        }
+
+        /* ── Glass Button Variants ───────────────────────────── */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ── Gradient Border Utility ────────────────────────── */
+        .gradient-border {
+            position: relative;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.5), rgba(59,130,246,0.3), rgba(167,139,250,0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        /* ── Section Divider ─────────────────────────────────── */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 50%, transparent);
+            margin: 4rem 0;
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-200 antialiased min-h-screen relative">
+
+    <!-- Animated Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="mesh-gradient"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1 — FULL-SCREEN HERO                                  -->
+    <!-- ============================================================ -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" id="hero">
+
+        <!-- Hero content -->
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+            <!-- Logo + App Name -->
+            <div class="logo-entrance inline-flex flex-col items-center gap-3 mb-10">
+                <div class="glass-strong rounded-3xl px-8 py-6 flex items-center gap-4">
+                    <img src="/images/echobreaker_logo.png" alt="EchoBreaker"
+                        class="h-32 w-32 object-contain rounded-2xl"
+                        onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='flex';">
+                    <div id="fallback-icon"
+                        class="hidden w-16 h-16 rounded-2xl items-center justify-center"
+                        style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.1)); border:1px solid rgba(16,185,129,0.3);">
+                        <svg class="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-3xl font-black tracking-tight leading-none"><span
+                                style="color:#ef4444">Echo</span><span style="color:#06b6d4">Breaker</span></div>
+                        <div class="text-xs text-gray-400 mt-1 tracking-widest uppercase">Responsible AI · Critical
+                            Thinking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staggered headline -->
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] mb-6"
+                id="hero-headline">
+                <span class="block mb-2">
+                    <span class="word" style="animation-delay:.3s">You've</span>&nbsp;<span class="word"
+                        style="animation-delay:.42s">been</span>&nbsp;<span class="word"
+                        style="animation-delay:.54s">in</span>&nbsp;<span class="word"
+                        style="animation-delay:.66s">a</span>&nbsp;<span class="word"
+                        style="animation-delay:.78s; color:#ef4444; text-shadow:0 0 40px rgba(239,68,68,0.5)">bubble.</span>
+                </span>
+                <span class="block">
+                    <span class="word" style="animation-delay:.95s">There's</span>&nbsp;<span class="word"
+                        style="animation-delay:1.07s">always</span>&nbsp;<span class="word"
+                        style="animation-delay:1.19s; color:#06b6d4; text-shadow:0 0 40px rgba(6,182,212,0.5)">another</span>&nbsp;<span
+                        class="word"
+                        style="animation-delay:1.31s; color:#06b6d4; text-shadow:0 0 40px rgba(6,182,212,0.5)">side.</span>
+                </span>
+            </h1>
+
+            <!-- Subheadline -->
+            <p class="text-xl sm:text-2xl text-gray-400 mb-6 max-w-3xl mx-auto word" style="animation-delay:1.5s">
+                EchoBreaker analyzes any YouTube search/video and instantly shows you strong, balanced counter-perspectives using local AI.
+            </p>
+
+            <!-- Short Explanatory Paragraph -->
+            <p class="text-base text-gray-500 mb-10 max-w-2xl mx-auto word" style="animation-delay:1.7s">
+                Modern algorithms push us deeper into our own beliefs. 
+                EchoBreaker helps break these invisible bubbles by generating thoughtful counter-arguments from ethical, empirical, and logical angles. 
+                Not to prove anyone wrong — but to help you think more clearly and make better-informed decisions.
+            </p>
+
+            <!-- Badges row -->
+            <div class="word flex flex-wrap items-center justify-center gap-3 mt-10" style="animation-delay:2.2s">
+                <span
+                    class="glass text-xs text-gray-300 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-white/[0.06] transition-all cursor-default">
+                    <svg class="w-3.5 h-3.5 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Privacy-First
+                </span>
+                <span
+                    class="glass text-xs text-gray-300 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-white/[0.06] transition-all cursor-default">
+                    <svg class="w-3.5 h-3.5 text-empirical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Responsible AI
+                </span>
+                <span
+                    class="glass text-xs text-gray-300 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-white/[0.06] transition-all cursor-default">
+                    <svg class="w-3.5 h-3.5 text-logical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    ~5 Second Analysis
+                </span>
+                <span
+                    class="glass text-xs text-gray-300 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-white/[0.06] transition-all cursor-default">
+                    <svg class="w-3.5 h-3.5 text-ethical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    </svg>
+                    No Data Stored
+                </span>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-400 cursor-pointer glass rounded-full px-4 py-3 hover:bg-white/[0.06] transition-all"
+            onclick="document.getElementById('input-section').scrollIntoView({behavior:'smooth'})">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2 — MISSION                                           -->
+    <!-- ============================================================ -->
+    <section class="max-w-5xl mx-auto px-6 pt-10 pb-4">
+        <div class="glass rounded-3xl p-8 sm:p-10 overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-accent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-red-500/10 to-transparent rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none blur-3xl"></div>
+            <div class="relative">
+                <div class="flex items-center gap-2.5 mb-5">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center glass-tint-green">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-accent">Our Mission</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-4 leading-snug">
+                    Not "you're wrong" — but <span style="color:#06b6d4; font-style:italic;">"there might be another
+                        perspective"</span>
+                </h2>
+                <p class="text-base text-gray-300 leading-relaxed max-w-3xl">
+                    Algorithms are designed to keep you watching — feeding you more of what you already believe.
+                    Over time, this creates <span class="text-red-400 font-semibold">echo chambers</span> that narrow
+                    your worldview
+                    and deepen <span class="text-red-400 font-semibold">polarization</span>.
+                    EchoBreaker is built on a simple idea: <span class="text-accent font-semibold">every argument
+                        deserves to meet its strongest counterpart</span>.
+                    We don't judge what you watch. We help you see the full picture.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            <div class="card-hover glass rounded-2xl p-5 group">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);">
+                    <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Reduce <span class="text-red-400">Polarization</span>
+                </h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Break free from filter bubbles that divide us into
+                    ideological silos.</p>
+            </div>
+            <div class="card-hover glass rounded-2xl p-5 group">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <svg class="w-5 h-5 text-empirical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Spark <span class="text-empirical">Critical
+                        Thinking</span></h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Challenge assumptions with evidence-based
+                    counter-arguments.</p>
+            </div>
+            <div class="card-hover glass rounded-2xl p-5 group">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);">
+                    <svg class="w-5 h-5 text-logical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Build <span class="text-logical">Media Literacy</span>
+                </h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Understand how content shapes opinion — and what's left
+                    out.</p>
+            </div>
+            <div class="card-hover glass rounded-2xl p-5 group">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.2);">
+                    <svg class="w-5 h-5 text-ethical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Practice <span class="text-ethical">Intellectual
+                        Humility</span></h3>
+                <p class="text-xs text-gray-400 leading-relaxed">The strongest thinkers actively seek perspectives that
+                    challenge their own.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3 — INPUT (Dual Mode)                                 -->
+    <!-- ============================================================ -->
+    <section class="max-w-3xl mx-auto px-6 mb-12" id="input-section">
+
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-extrabold text-white mb-1">Try it yourself</h2>
+            <p class="text-sm text-gray-400">Search a topic or paste a YouTube video link.</p>
+        </div>
+
+        <!-- Echo Chamber wrapper -->
+        <div class="glass-tint-red rounded-3xl overflow-hidden">
+            <div class="h-[3px]" style="background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
+            <div class="p-6">
+
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);">
+                        <svg class="w-5 h-5" fill="#ff0000" viewBox="0 0 24 24">
+                            <path
+                                d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-[0.16em]" style="color:#f87171;">Echo
+                            Chamber</div>
+                        <div class="text-xs text-gray-400">Search a topic or paste a URL — see what the
+                            algorithm would feed you next</div>
+                    </div>
+                </div>
+
+                <!-- Mode Tabs -->
+                <div class="flex items-center gap-2 mb-4 glass-subtle rounded-xl p-1.5 w-fit">
+                    <button id="tab-search" onclick="switchMode('search')"
+                        class="mode-tab active flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg border">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Search Topic
+                    </button>
+                    <button id="tab-url" onclick="switchMode('url')"
+                        class="mode-tab flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg border">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Paste URL
+                    </button>
+                </div>
+
+                <!-- Search Mode -->
+                <div id="mode-search" class="animate-fadeIn">
+                    <div class="glass-subtle rounded-xl p-2 transition-all duration-300 input-focus">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" id="searchInput"
+                                class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm px-2 py-2.5 outline-none"
+                                placeholder="e.g. Is AI dangerous? Climate change solutions..." autocomplete="off"
+                                spellcheck="false" onkeydown="if(event.key==='Enter') searchTopic()">
+                            <button id="searchBtn" onclick="searchTopic()"
+                                class="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-150 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+                                style="background:linear-gradient(135deg,#ef4444,#dc2626);">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <div id="search-results" class="mt-4"></div>
+                </div>
+
+                <!-- URL Mode -->
+                <div id="mode-url" class="hidden animate-fadeIn">
+                    <div class="glass-subtle rounded-xl p-2 transition-all duration-300 input-focus">
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="urlInput"
+                                class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm px-3 py-2.5 outline-none"
+                                placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false"
+                                onkeydown="if(event.key==='Enter') analyze()">
+                            <button id="analyzeBtn" onclick="analyze()"
+                                class="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-150 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+                                style="background:linear-gradient(135deg,#10b981,#059669);">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Break the Echo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="errorMsg"
+            class="hidden mt-3 text-sm text-danger-light bg-danger-bg border border-danger-border rounded-xl px-4 py-3">
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- LOADING STATE                                                 -->
+    <!-- ============================================================ -->
+    <section id="loading" class="hidden max-w-md mx-auto px-6 py-12 text-center">
+        <div class="glass rounded-2xl p-8">
+            <div class="spinner mx-auto mb-6"></div>
+            <div class="space-y-4 text-left">
+                <div class="flex items-center gap-3 text-sm" id="step-extract">
+                    <div class="w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300 step-dot"></div>
+                    <span class="text-gray-400 transition-colors duration-300">Extracting captions from YouTube</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm" id="step-analyze">
+                    <div class="w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300 step-dot"></div>
+                    <span class="text-gray-400 transition-colors duration-300">Analyzing perspectives with AI</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm" id="step-generate">
+                    <div class="w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300 step-dot"></div>
+                    <span class="text-gray-400 transition-colors duration-300">Generating counter-arguments</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- RESULTS                                                       -->
+    <!-- ============================================================ -->
+    <main id="results" class="hidden max-w-6xl mx-auto px-6 pb-20">
+
+        <!-- Video metadata bar -->
+        <div id="result-meta" class="mb-6 rounded-2xl p-5 glass animate-fadeUp">
+            <!-- populated by JS -->
+        </div>
+
+        <!-- Two-column layout -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+            <!-- ── LEFT: ECHO CHAMBER ─────────────────────────────── -->
+            <div class="rounded-3xl overflow-hidden flex flex-col animate-fadeUp glass-tint-red">
+                <div class="h-[3px]" style="background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
+                <div class="p-6 flex flex-col flex-1 gap-4">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 glass-subtle">
+                            <svg class="w-5 h-5" style="color:#f87171" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-[0.16em]" style="color:#f87171;">
+                                Echo Chamber</div>
+                            <div class="text-xs text-gray-400">What the algorithm keeps feeding you
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Primary claim -->
+                    <div class="rounded-xl px-4 py-3 glass-subtle" style="background: rgba(239, 68, 68, 0.05);">
+                        <div class="text-[0.65rem] font-black uppercase tracking-widest mb-1.5" style="color:#f87171;">
+                            Video's Primary Claim</div>
+                        <p class="text-sm leading-relaxed" style="color:#fca5a5;" id="echo-primary-claim"></p>
+                    </div>
+
+                    <!-- Algorithm recommendation videos -->
+                    <div>
+                        <div class="text-[0.65rem] font-black uppercase tracking-widest mb-2" style="color:#ef4444;">
+                            What YouTube would recommend next
+                        </div>
+                        <div id="echo-videos">
+                            <p class="text-xs text-gray-400">Loading recommendations...</p>
+                        </div>
+                    </div>
+
+                    <!-- Echo description -->
+                    <p class="text-xs italic leading-relaxed mt-auto text-gray-400" id="echo-desc"></p>
+                </div>
+            </div>
+
+            <!-- ── RIGHT: ECHOBREAKER ──────────────────────────────── -->
+            <div class="rounded-3xl overflow-hidden flex flex-col animate-fadeUp delay-1 glass-tint-green">
+                <div class="h-[3px]" style="background:linear-gradient(90deg,#10b981,#059669);"></div>
+                <div class="p-6 flex flex-col flex-1 gap-4">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 glass-subtle">
+                            <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-[0.16em]"><span
+                                    style="color:#ef4444">Echo</span><span style="color:#06b6d4">Breaker</span></div>
+                            <div class="text-xs text-gray-400">The other side you're not seeing</div>
+                        </div>
+                    </div>
+
+                    <!-- Primary counter narrative -->
+                    <div class="rounded-xl px-4 py-3 glass-subtle" style="background: rgba(16, 185, 129, 0.05);">
+                        <div class="text-[0.65rem] font-black uppercase tracking-widest mb-1.5 text-accent">
+                            Counter-Perspective</div>
+                        <p class="text-sm leading-relaxed text-accent-light" id="breaker-primary"></p>
+                    </div>
+
+                    <!-- Supporting dimensions as accordions (inside this box) -->
+                    <div>
+                        <div class="text-[0.65rem] font-black uppercase tracking-widest mb-2 text-accent">
+                            Supporting Dimensions</div>
+                        <div id="dimension-cards" class="space-y-2">
+                            <!-- populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RESPONSIBLE AI NOTICE ──────────────────────────────── -->
+        <div class="flex items-start gap-3 rounded-2xl px-5 py-4 glass">
+            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#475569;" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+            <p class="text-xs leading-relaxed" style="color:#94a3b8;">
+                Analysis generated to promote <span style="color:#cbd5e1;font-weight:500;">critical thinking</span>,
+                <span style="color:#cbd5e1;font-weight:500;">intellectual humility</span>, and
+                <span style="color:#cbd5e1;font-weight:500;">perspective diversity</span>.
+                Counter-perspectives represent possible opposing viewpoints, not established facts.
+                Always verify claims through independent research.
+            </p>
+        </div>
+
+    </main>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- ============================================================ -->
+    <!-- RESPONSIBLE AI                                                -->
+    <!-- ============================================================ -->
+    <section class="max-w-5xl mx-auto px-6 py-16">
+        <div class="text-center mb-10">
+            <h2 class="text-xl font-extrabold text-white mb-2">Built with <span class="text-accent">Responsible
+                    AI</span> Principles</h2>
+            <p class="text-sm text-gray-400">Transparency, privacy, and human agency at every layer.</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6">
+            <div class="card-hover glass rounded-2xl p-6">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <svg class="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Privacy-First Design</h3>
+                <p class="text-xs text-gray-400 leading-relaxed"><span class="text-gray-300 font-medium">Zero data
+                        stored.</span> No cookies, no tracking, no user accounts. Captions processed in-memory and <span
+                        class="text-accent font-medium">discarded immediately</span>.</p>
+            </div>
+            <div class="card-hover glass rounded-2xl p-6">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <svg class="w-6 h-6 text-empirical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Balanced, Not Biased</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Three dimensions — <span
+                        class="text-ethical font-medium">ethical</span>, <span
+                        class="text-empirical font-medium">empirical</span>, <span
+                        class="text-logical font-medium">logical</span> — ensure no single mode of reasoning dominates.
+                </p>
+            </div>
+            <div class="card-hover glass rounded-2xl p-6">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.2);">
+                    <svg class="w-6 h-6 text-ethical" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1.5">Human Agency First</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Counter-perspectives are <span
+                        class="text-ethical font-medium">invitations</span>, not corrections. You decide what to think —
+                    we ensure you've <span class="text-gray-300 font-medium">seen the other side</span>.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER                                                        -->
+    <!-- ============================================================ -->
+    <footer class="py-12 text-center">
+        <div class="glass inline-flex flex-col items-center gap-3 rounded-2xl px-8 py-6 mb-4">
+            <div class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="text-base font-bold"><span style="color:#ef4444">Echo</span><span
+                        style="color:#06b6d4">Breaker</span></span>
+            </div>
+            <p class="text-xs text-gray-400">Responsible AI for Critical Thinking · Open Source ·
+                Privacy-First</p>
+            <p class="text-xs text-gray-500 mt-1">AI-generated content may contain inaccuracies. Always verify claims
+                independently.</p>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT                                                    -->
+    <!-- ============================================================ -->
+    <script>
+        const API = '';
+        let currentMode = 'search';
+
+        // ─── Mode Switch ───────────────────────────────────────────
+        function switchMode(mode) {
+            currentMode = mode;
+            const urlPanel = document.getElementById('mode-url');
+            const searchPanel = document.getElementById('mode-search');
+            const tabUrl = document.getElementById('tab-url');
+            const tabSearch = document.getElementById('tab-search');
+            const results = document.getElementById('results');
+
+            hideError();
+            results.classList.add('hidden');
+
+            if (mode === 'url') {
+                urlPanel.classList.remove('hidden');
+                searchPanel.classList.add('hidden');
+                tabUrl.classList.add('active');
+                tabSearch.classList.remove('active');
+                setTimeout(() => document.getElementById('urlInput').focus(), 50);
+            } else {
+                urlPanel.classList.add('hidden');
+                searchPanel.classList.remove('hidden');
+                tabSearch.classList.add('active');
+                tabUrl.classList.remove('active');
+                document.getElementById('search-results').innerHTML = '';
+                setTimeout(() => document.getElementById('searchInput').focus(), 50);
+            }
+        }
+
+        // ─── Search Topic ──────────────────────────────────────────
+        async function searchTopic() {
+            const query = document.getElementById('searchInput').value.trim();
+            const btn = document.getElementById('searchBtn');
+            const container = document.getElementById('search-results');
+
+            if (!query) return showError('Please enter a topic to search.');
+            hideError();
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-sm mr-2"></span>Searching...';
+            container.innerHTML = renderSkeletons(4);
+
+            try {
+                const resp = await fetch(`${API}/api/search-sources`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ youtube_query: query }),
+                });
+                if (!resp.ok) throw new Error(`Search failed (${resp.status})`);
+                const videos = await resp.json();
+
+                if (!videos.length) {
+                    container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">No videos found for "<span class="text-gray-300">${esc(query)}</span>". Try a different topic.</div>`;
+                } else {
+                    renderSearchResults(videos, container);
+                }
+            } catch (e) {
+                container.innerHTML = '';
+                showError(e.message || 'Search failed. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Search';
+            }
+        }
+
+        // ─── Render Search Results ─────────────────────────────────
+        function renderSearchResults(videos, container) {
+            const header = `
+        <div class="flex items-center justify-between mb-4 animate-fadeIn">
+            <div>
+                <span class="text-sm font-bold text-white">${videos.length} videos found</span>
+                <span class="text-xs text-gray-400 ml-2">— Click a video to analyze it</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-accent glass rounded-full px-3 py-1.5">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                YouTube Search
+            </div>
+        </div>`;
+
+            const cards = videos.map((v, i) => {
+                const thumb = v.thumbnail
+                    ? `<img src="${esc(v.thumbnail)}" alt="" class="w-28 h-[62px] rounded-lg object-cover flex-shrink-0" onerror="this.style.display='none'">`
+                    : `<div class="w-28 h-[62px] rounded-lg glass flex items-center justify-center flex-shrink-0"><svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+                const duration = v.duration ? `<span class="text-[0.65rem] text-gray-300 bg-black/40 rounded px-1.5 py-0.5 absolute bottom-1 right-1">${esc(v.duration)}</span>` : '';
+                const channel = v.channel_name ? `<span>📺 ${esc(v.channel_name)}</span>` : '';
+                const views = v.view_count ? `<span>👁 ${esc(v.view_count)}</span>` : '';
+
+                return `
+        <div class="video-card glass rounded-2xl p-4 cursor-pointer animate-slideDown" style="animation-delay:${i * 0.06}s" onclick="analyzeFromSearch('${esc(v.url)}', this)">
+            <div class="flex items-start gap-4">
+                <div class="relative flex-shrink-0">${thumb}${duration}</div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-semibold text-white leading-snug mb-1.5 line-clamp-2">${esc(v.title)}</h4>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-400">${channel}${views}</div>
+                </div>
+                <button class="analyze-btn flex-shrink-0 flex items-center gap-1.5 text-xs font-bold text-white rounded-xl px-3 py-2 whitespace-nowrap shadow-lg pointer-events-none" style="background:linear-gradient(135deg,#10b981,#059669);">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Break the Echo
+                </button>
+            </div>
+        </div>`;
+            }).join('');
+
+            container.innerHTML = header + `<div class="space-y-3">${cards}</div>`;
+        }
+
+        // ─── Analyze from Search Result ────────────────────────────
+        function analyzeFromSearch(url, cardEl) {
+            document.querySelectorAll('.video-card').forEach(c => c.classList.remove('ring-2', 'ring-accent/50'));
+            if (cardEl) cardEl.classList.add('ring-2', 'ring-accent/50');
+            switchMode('url');
+            document.getElementById('urlInput').value = url;
+            analyze();
+        }
+
+        // ─── Analyze ───────────────────────────────────────────────
+        async function analyze() {
+            const url = document.getElementById('urlInput').value.trim();
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            if (!url) return showError('Please enter a YouTube URL.');
+            if (!url.includes('youtube.com/') && !url.includes('youtu.be/'))
+                return showError('Please enter a valid YouTube URL.');
+
+            hideError();
+            results.classList.add('hidden');
+            loading.classList.remove('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="w-3.5 h-3.5 inline mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>Analyzing...';
+
+            // Scroll to loading state
+            setTimeout(() => loading.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+
+            activateStep('extract');
+            await sleep(400);
+            activateStep('analyze');
+
+            try {
+                const resp = await fetch(`${API}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: url }),
+                });
+
+                activateStep('generate');
+                await sleep(300);
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Server error (${resp.status})`);
+                }
+
+                const data = await resp.json();
+                loading.classList.add('hidden');
+                resetSteps();
+                renderResults(data);
+                setTimeout(() => document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+            } catch (e) {
+                loading.classList.add('hidden');
+                resetSteps();
+                showError(e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-3.5 h-3.5 inline mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Break the Echo';
+            }
+        }
+
+        // ─── Dimension config ──────────────────────────────────────
+        const DIM = {
+            Ethical: {
+                label: 'Ethical Considerations',
+                accent: '#10b981', accentDim: 'rgba(16,185,129,0.08)', accentBdr: 'rgba(16,185,129,0.2)',
+                topBar: '#10b981', dotBg: 'rgba(16,185,129,0.12)',
+                icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>`,
+            },
+            Empirical: {
+                label: 'Empirical Evidence',
+                accent: '#06b6d4', accentDim: 'rgba(6,182,212,0.08)', accentBdr: 'rgba(6,182,212,0.2)',
+                topBar: '#06b6d4', dotBg: 'rgba(6,182,212,0.12)',
+                icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>`,
+            },
+            Logical: {
+                label: 'Logical Analysis',
+                accent: '#818cf8', accentDim: 'rgba(129,140,248,0.08)', accentBdr: 'rgba(129,140,248,0.2)',
+                topBar: '#818cf8', dotBg: 'rgba(129,140,248,0.12)',
+                icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>`,
+            },
+        };
+
+        // ─── Build Primary Narrative ────────────────────────────────
+        function buildPrimaryNarrative(counters, primaryClaim) {
+            if (!counters.length) return ['No counter-perspectives available.', ''];
+            const ethical = counters.find(c => c.type === 'Ethical');
+            const empirical = counters.find(c => c.type === 'Empirical');
+            const logical = counters.find(c => c.type === 'Logical');
+            const starters = [
+                'A more nuanced perspective suggests',
+                'While the video raises valid points, a critical counter-view holds',
+                'Looking at this through a broader lens',
+            ];
+            const opener = starters[Math.floor(Math.random() * starters.length)];
+            const p1Parts = [];
+            if (ethical) p1Parts.push(ethical.key_point);
+            if (empirical) p1Parts.push(empirical.key_point);
+            const p1 = `${opener}: ${p1Parts.join(' Furthermore, ')}`;
+            const p2 = logical
+                ? `From a logical standpoint, ${logical.key_point} ${logical.why_it_matters || ''}`
+                : '';
+            return [p1.trim(), p2.trim()];
+        }
+
+        // ─── Render Results ────────────────────────────────────────
+        function renderResults(data) {
+            const counters = data.counter_arguments || [];
+            const m = data.video_metadata || {};
+
+            // — Video metadata bar —
+            const thumb = m.thumbnail
+                ? `<img src="${esc(m.thumbnail)}" class="w-32 h-[72px] rounded-xl object-cover flex-shrink-0">`
+                : '';
+            document.getElementById('result-meta').innerHTML = `
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    ${thumb}
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-bold text-white mb-1 leading-snug">${esc(m.video_title || 'Unknown')}</h2>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400;">
+                            <span>📺 ${esc(m.channel_name || 'Unknown')}</span>
+                            <span>⏱️ ${esc(m.duration || 'N/A')}</span>
+                            <span>👁️ ${esc(m.view_count || '0')} views</span>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 glass-tint-green"
+                          style="color:#10b981;">
+                        ${esc(data.topic || '')}
+                    </span>
+                </div>`;
+
+            // — Echo chamber left —
+            document.getElementById('echo-primary-claim').textContent = data.primary_claim || '';
+            document.getElementById('echo-desc').textContent = '\u201c' + (data.echo_chamber_description || '') + '\u201d';
+            window._echoQuery = data.echo_chamber_query || '';
+            // Auto-load echo chamber videos, filter out current video
+            const currentUrl = document.getElementById('urlInput').value.trim();
+            loadEchoVideos(window._echoQuery, currentUrl);
+
+            // — EchoBreaker right: primary counter narrative —
+            const [p1] = buildPrimaryNarrative(counters, data.primary_claim);
+            document.getElementById('breaker-primary').textContent = p1;
+
+            // — Supporting dimension accordion cards (inside EchoBreaker box) —
+            document.getElementById('dimension-cards').innerHTML = counters.map((c, i) => {
+                const cfg = DIM[c.type] || DIM.Ethical;
+                const why = c.why_it_matters || '';
+                const ref = c.academic_ref || '';
+                const ytUrl = c.youtube_search_url || '#';
+                const schUrl = c.scholar_search_url || '#';
+                const cardId = `dim-body-${i}`;
+
+                return `
+                <div class="relative rounded-2xl overflow-hidden flex flex-col glass-subtle"
+                    style="animation:fadeUp .5s ease ${i * 0.1}s both;">
+
+                <!-- top accent -->
+                <div class="h-[2px] w-full flex-shrink-0"
+                    style="background:${cfg.topBar};"></div>
+
+                <!-- Accordion header (always visible, click to toggle) -->
+                <button class="w-full text-left p-4 flex items-center gap-3 group"
+                        onclick="toggleDim('${cardId}', this)"
+                        style="cursor:pointer;">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style="background:${cfg.dotBg}; color:${cfg.accent};">
+                        ${cfg.icon}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[0.65rem] font-black uppercase tracking-[0.15em]"
+                             style="color:${cfg.accent};">${esc(cfg.label)}</div>
+                        <div class="text-sm font-bold text-white leading-snug mt-0.5 truncate">
+                            ${esc(c.title)}
+                        </div>
+                    </div>
+                    <svg class="dim-chevron w-4 h-4 flex-shrink-0 transition-transform duration-300"
+                         style="color:#475569;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <!-- Accordion body (hidden by default) -->
+                <div id="${cardId}" class="dim-body hidden px-4 pb-4 flex flex-col gap-3">
+
+                    <!-- key point -->
+                    <p class="text-xs leading-relaxed text-gray-300;">
+                    ${esc(c.key_point)}
+                    </p>
+
+                    <!-- why it matters -->
+                    ${why ? `
+                    <div class="rounded-xl px-3 py-2.5 glass-subtle">
+                    <div class="text-[0.6rem] font-black uppercase tracking-[0.15em] mb-1"
+                        style="color:${cfg.accent};">Why it matters</div>
+                    <p class="text-xs italic leading-relaxed text-gray-200;">${esc(why)}</p>
+                    </div>` : ''}
+
+                    <!-- ref + links -->
+                    ${ref ? `
+                    <p class="text-[0.7rem] text-gray-500;">
+                    📖 ${esc(ref)}
+                    </p>` : ''}
+
+                    <div class="flex flex-wrap gap-2 mt-auto pt-1">
+                    <a href="${esc(ytUrl)}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-1.5 text-[0.7rem] font-semibold rounded-lg px-2.5 py-1.5 transition-all hover:bg-red-500/10"
+                        style="color:#f87171; border:1px solid rgba(239,68,68,0.2);">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                        YouTube
+                    </a>
+                    <a href="${esc(schUrl)}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-1.5 text-[0.7rem] font-semibold rounded-lg px-2.5 py-1.5 transition-all hover:bg-blue-500/10"
+                        style="color:#60a5fa; border:1px solid rgba(96,165,250,0.2);">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                        </svg>
+                        Scholar
+                    </a>
+                    </div>
+
+                </div>
+                <!-- end accordion body -->
+                </div>
+                </div>`;
+            }).join('');
+
+            // — Show section —
+            document.getElementById('results').classList.remove('hidden');
+            setTimeout(() =>
+                document.getElementById('results')
+                    .scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
+
+        // ─── Accordion Toggle ─────────────────────────────────────
+        function toggleDim(bodyId, btn) {
+            const body = document.getElementById(bodyId);
+            const chevron = btn.querySelector('.dim-chevron');
+            const isHidden = body.classList.contains('hidden');
+            body.classList.toggle('hidden', !isHidden);
+            if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+        }
+
+        // ─── Echo Chamber Videos ───────────────────────────────────
+        async function loadEchoVideos(query, currentVideoUrl) {
+            const container = document.getElementById('echo-videos');
+            if (!query) { container.innerHTML = '<p class="text-xs text-gray-400">No query available.</p>'; return; }
+            container.innerHTML = `<div class="space-y-2">${[1, 2, 3, 4, 5].map(() => `
+                <div class="flex items-center gap-3 glass-subtle rounded-xl px-4 py-3">
+                    <div class="skeleton h-3 w-3/4 rounded"></div>
+                </div>`).join('')}</div>`;
+            try {
+                const resp = await fetch(`${API}/api/search-sources`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ youtube_query: query, limit: 6 }),
+                });
+                const all = await resp.json();
+                // Filter out the video currently being analyzed
+                const videos = all.filter(v => v.url !== currentVideoUrl).slice(0, 5);
+                if (!videos.length) {
+                    container.innerHTML = '<p class="text-xs text-gray-400">No results found.</p>';
+                } else {
+                    container.innerHTML = '<div class="space-y-2">' + videos.map((v, i) => `
+                <div class="flex items-center justify-between glass-subtle rounded-xl px-4 py-3 animate-slideIn" style="animation-delay:${i * 0.05}s">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-semibold text-gray-300 truncate">${esc(v.title)}</div>
+                        <div class="text-xs text-gray-400 mt-0.5">📺 ${esc(v.channel_name || 'Unknown')}</div>
+                    </div>
+                    <a href="${esc(v.url)}" target="_blank" rel="noopener"
+                       class="text-xs font-semibold ml-3 whitespace-nowrap transition-colors hover:text-red-400"
+                       style="color:#f87171;">Watch →</a>
+                </div>`).join('') + '</div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-gray-400">Search failed.</p>';
+            }
+        }
+
+        // ─── Explore Sources ───────────────────────────────────────
+        async function exploreSources(btn, query) {
+            const container = btn.closest('[class*="glass"]').querySelector('.sources-container');
+            if (!query) { container.innerHTML = '<p class="text-xs text-gray-400 mt-2">No query.</p>'; return; }
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-sm mr-1.5"></span>Searching...';
+            container.innerHTML = '<p class="text-xs text-gray-400 mt-2">Searching YouTube...</p>';
+            try {
+                const resp = await fetch(`${API}/api/search-sources`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ youtube_query: query }),
+                });
+                const videos = await resp.json();
+                if (!videos.length) {
+                    container.innerHTML = '<p class="text-xs text-gray-400 mt-2">No sources found.</p>';
+                } else {
+                    container.innerHTML = '<div class="space-y-1.5 mt-2">' + videos.map(v => `
+                <div class="flex items-center justify-between glass-subtle rounded-lg px-3 py-2.5 animate-slideIn">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-semibold text-gray-300 truncate">${esc(v.title)}</div>
+                        <div class="text-[0.7rem] text-gray-400 mt-0.5">📺 ${esc(v.channel_name || 'Unknown')}</div>
+                    </div>
+                    <a href="${esc(v.url)}" target="_blank" rel="noopener" class="text-xs font-semibold text-accent hover:underline ml-2 whitespace-nowrap">Watch →</a>
+                </div>`).join('') + '</div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-gray-400 mt-2">Search failed.</p>';
+            }
+            btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Explore Sources`;
+            btn.disabled = false;
+        }
+
+        // ─── Skeleton Loader ──────────────────────────────────────
+        function renderSkeletons(n) {
+            return Array.from({ length: n }, () => `
+        <div class="glass rounded-2xl p-4 mb-3">
+            <div class="flex items-start gap-4">
+                <div class="skeleton w-28 h-16 flex-shrink-0"></div>
+                <div class="flex-1 space-y-2 pt-1">
+                    <div class="skeleton h-4 w-3/4"></div>
+                    <div class="skeleton h-3 w-1/2"></div>
+                </div>
+            </div>
+        </div>`).join('');
+        }
+
+        // ─── Progress Steps ───────────────────────────────────────
+        function activateStep(id) {
+            const all = ['extract', 'analyze', 'generate'];
+            const idx = all.indexOf(id);
+            all.forEach((s, i) => {
+                const el = document.getElementById(`step-${s}`);
+                const dot = el.querySelector('.step-dot');
+                const lbl = el.querySelector('span:last-child') || el.lastElementChild;
+                if (i < idx) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-accent/40 transition-all duration-300 step-dot';
+                    if (lbl) lbl.className = 'text-gray-400 transition-colors duration-300';
+                    el.classList.remove('step-pulse');
+                } else if (i === idx) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-accent shadow-[0_0_12px_rgba(16,185,129,0.8)] transition-all duration-300 step-dot step-dot-inner';
+                    if (lbl) lbl.className = 'text-accent font-semibold transition-colors duration-300';
+                    el.classList.add('step-pulse');
+                }
+            });
+        }
+
+        function resetSteps() {
+            ['extract', 'analyze', 'generate'].forEach(s => {
+                const el = document.getElementById(`step-${s}`);
+                const dot = el.querySelector('.step-dot');
+                const lbl = el.querySelector('span:last-child') || el.lastElementChild;
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300 step-dot';
+                if (lbl) lbl.className = 'text-gray-400 transition-colors duration-300';
+                el.classList.remove('step-pulse');
+            });
+        }
+
+        // ─── Utilities ────────────────────────────────────────────
+        function showError(msg) { const e = document.getElementById('errorMsg'); e.textContent = msg; e.classList.remove('hidden'); }
+        function hideError() { document.getElementById('errorMsg').classList.add('hidden'); }
+        function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') analyze(); });
+        document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchTopic(); });
+    </script>
+
+</body>
+
+</html>
