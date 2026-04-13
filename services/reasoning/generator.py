@@ -1,7 +1,10 @@
 import json
+import logging
 import urllib.parse
 from core.config import Config
 from models.analysis_result import AnalysisResult
+
+logger = logging.getLogger(__name__)
 
 LANG_INSTRUCTION = {
     "en": "",
@@ -109,7 +112,7 @@ class AzureReasoningEngine:
             data = json.loads(_extract_json(response.choices[0].message.content))
             return _postprocess(data)
         except Exception as e:
-            print(f"Azure OpenAI error: {e}")
+            logger.error("Azure OpenAI error: %s", e, exc_info=True)
             return _fallback_result()
 
     def verify_relevance(self, counter_argument_content: str, video_title: str, video_description: str = "") -> dict:
@@ -126,7 +129,8 @@ Return JSON: {{"score": 0.0-1.0, "verdict": "accept"/"reject", "reason": "1 sent
                 max_completion_tokens=150,
             )
             return json.loads(_extract_json(response.choices[0].message.content))
-        except Exception:
+        except Exception as e:
+            logger.warning("Azure verify_relevance failed: %s", e)
             return {"score": 0.7, "verdict": "accept", "reason": "Default acceptance"}
 
 
@@ -152,7 +156,7 @@ class GroqReasoningEngine:
             data = json.loads(_extract_json(response.choices[0].message.content))
             return _postprocess(data)
         except Exception as e:
-            print(f"Groq error: {e}")
+            logger.error("Groq error: %s", e, exc_info=True)
             return _fallback_result()
 
     def verify_relevance(self, counter_argument_content: str, video_title: str, video_description: str = "") -> dict:
@@ -169,16 +173,17 @@ Return JSON: {{"score": 0.0-1.0, "verdict": "accept"/"reject", "reason": "1 sent
                 max_tokens=150,
             )
             return json.loads(_extract_json(response.choices[0].message.content))
-        except Exception:
+        except Exception as e:
+            logger.warning("Groq verify_relevance failed: %s", e)
             return {"score": 0.7, "verdict": "accept", "reason": "Default acceptance"}
 
 
 def create_reasoning_engine():
     if Config.PROVIDER == "azure" and Config.AZURE_OPENAI_API_KEY:
-        print("  Using Azure OpenAI for reasoning")
+        logger.info("Using Azure OpenAI for reasoning")
         return AzureReasoningEngine()
     elif Config.PROVIDER == "groq" and Config.GROQ_API_KEY:
-        print("  Using Groq (free tier) for reasoning")
+        logger.info("Using Groq (free tier) for reasoning")
         return GroqReasoningEngine()
     else:
         raise RuntimeError(

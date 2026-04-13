@@ -3,6 +3,7 @@ fastapi
 uvicorn
 pydantic
 python-dotenv
+requests
 
 # YouTube caption extraction
 yt-dlp
@@ -10,6 +11,3 @@ yt-dlp
 # LLM providers
 openai>=1.10.0,<2.0.0
 groq
-
-# Azure Speech (optional)
-azure-cognitiveservices-speech
