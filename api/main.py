@@ -1,14 +1,23 @@
+import logging
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
-import os
+
 from core.config import Config
 from models.analysis_result import AnalysisResult, VideoSuggestion
 from services.youtube.downloader import YouTubeExtractor
 from services.reasoning.generator import create_reasoning_engine
 from services.search.youtube_search import SearchService
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s — %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="EchoBreaker API", version="5.1.0")
 
@@ -16,11 +25,11 @@ app = FastAPI(title="EchoBreaker API", version="5.1.0")
 extractor = YouTubeExtractor()
 searcher = SearchService()
 try:
-    print(f"Initializing EchoBreaker (provider: {Config.PROVIDER})...")
+    logger.info("Initializing EchoBreaker (provider: %s)...", Config.PROVIDER)
     reasoner = create_reasoning_engine()
-    print("Ready.")
+    logger.info("Ready.")
 except Exception as e:
-    print(f"Failed to initialize reasoning engine: {e}")
+    logger.error("Failed to initialize reasoning engine: %s", e, exc_info=True)
     reasoner = None
 
 
@@ -47,20 +56,18 @@ async def analyze_video(request: AnalyzeRequest):
         )
     
     try:
-        print(f"[1/2] Extracting: {request.video_url}")
+        logger.info("[1/2] Extracting: %s", request.video_url)
         transcript, metadata = extractor.extract(request.video_url)
 
-        print(f"[2/2] Analyzing ({len(transcript)} chars)...")
+        logger.info("[2/2] Analyzing (%d chars)...", len(transcript))
         result = reasoner.generate_analysis(transcript, request.video_url, language=request.language)
         result.video_metadata = metadata
 
-        print("Done.")
+        logger.info("Done.")
         return result
 
     except Exception as e:
-        import traceback
-        print(f"Pipeline error: {e}")
-        traceback.print_exc()
+        logger.error("Pipeline error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -71,7 +78,7 @@ async def search_sources(request: SearchSourcesRequest):
         results = await searcher.search_videos(request.youtube_query, limit=3)
         return results
     except Exception as e:
-        print(f"Search error: {e}")
+        logger.error("Search error: %s", e, exc_info=True)
         return []
 
 

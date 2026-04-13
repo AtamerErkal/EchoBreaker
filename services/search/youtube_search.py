@@ -1,8 +1,11 @@
 import asyncio
+import logging
 import yt_dlp
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from models.analysis_result import VideoSuggestion
+
+logger = logging.getLogger(__name__)
 
 class SearchService:
     def __init__(self):
@@ -58,7 +61,7 @@ class SearchService:
                     result = ydl.extract_info(search_query, download=False)
                     return result.get('entries', []) if result else []
                 except Exception as e:
-                    print(f"  Search error: {e}")
+                    logger.error("Search error: %s", e, exc_info=True)
                     return []
 
         try:
@@ -97,5 +100,5 @@ class SearchService:
             return results
 
         except Exception as e:
-            print(f"  Search exception for '{query}': {e}")
+            logger.error("Search exception for '%s': %s", query, e, exc_info=True)
             return []
