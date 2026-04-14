@@ -534,6 +534,1151 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 50%, transparent);
             margin: 4rem 0;
         }
+
+        /* ── YouTube Simulation Styles ─────────────────────────── */
+        .mock-player {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .mock-player-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+        }
+
+        .mock-player-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+        }
+
+        .play-button-overlay {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-button-overlay:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .sidebar-recs {
+            background: rgba(239, 68, 68, 0.03);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .rec-video-card {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rec-video-card:hover {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: translateX(4px);
+        }
+
+        .rec-thumbnail {
+            width: 120px;
+            height: 68px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .analysis-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 45%;
+            max-width: 600px;
+            height: 100vh;
+            background: rgba(6, 10, 20, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .analysis-overlay.open {
+            transform: translateX(0);
+        }
+
+        .analysis-overlay-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 99;
+        }
+
+        .analysis-overlay-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .collapsible-drawer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .collapsible-drawer.open {
+            max-height: 500px;
+        }
+
+        .break-echo-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .break-echo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.6);
+        }
+
+        .topic-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 13px;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .topic-chip:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .analysis-overlay {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-recs {
+                max-height: none;
+            }
+        }
+
+        /* ── Real iMac Monitor with YouTube Screen ─────────────── */
+        .simulation-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 2100px;
+            margin: 0 auto;
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(6, 182, 212, 0.05));
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(16, 185, 129, 0.1);
+        }
+
+        .simulation-label {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+        }
+
+        .imac-container {
+            position: relative;
+            width: 100%;
+            max-width: 2000px;
+            margin: 0 auto;
+        }
+
+        .imac-frame {
+            position: relative;
+            width: 100%;
+            min-height: 1100px;
+            aspect-ratio: 1152 / 768;
+            background: url('/static/imac-dark_logo.png') no-repeat center center;
+            background-size: contain;
+            border-radius: 8px;
+            overflow: visible;
+        }
+
+        .imac-screen {
+            position: absolute;
+            top: 14.9%;
+            left: 10.5%;
+            right: 11%;
+            bottom: 36.9%;
+            background: transparent;
+            border-radius: 2px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.7);
+        }
+
+        .imac-screen.has-content {
+            background: #000;
+        }
+
+        .imac-screen-content {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .imac-screen-content.has-content {
+            background: #0F0F0F;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screen glow effect */
+        .imac-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Reflection at bottom of screen */
+        .imac-screen::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 15%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.3) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Monitor stand shadow/glow */
+        .imac-glow {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 20px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+            filter: blur(10px);
+            z-index: -1;
+        }
+
+        /* ── YouTube Dark Theme ──────────────────────────────── */
+        .yt-bg { background: #0F0F0F; }
+        .yt-surface { background: #121212; }
+        .yt-surface-hover:hover { background: #272727; }
+        .yt-border { border-color: #303030; }
+        .yt-text-primary { color: #F1F1F1; }
+        .yt-text-secondary { color: #AAAAAA; }
+        .yt-red { color: #FF0000; }
+        .yt-red-bg { background: #FF0000; }
+        .yt-green-bg { background: #065F46; }
+
+        /* ── YouTube Layout ─────────────────────────────────── */
+        .yt-layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .yt-layout-main {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .yt-sidebar {
+            background: #0F0F0F;
+            border-right: 1px solid #303030;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+
+        .yt-sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #F1F1F1;
+            transition: background 0.2s;
+            border-radius: 10px;
+            margin: 0 12px;
+        }
+
+        .yt-sidebar-item:hover {
+            background: #272727;
+        }
+
+        .yt-sidebar-item.active {
+            background: #272727;
+            font-weight: 500;
+        }
+
+        .yt-sidebar-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .yt-sidebar-divider {
+            height: 1px;
+            background: #303030;
+            margin: 12px 16px;
+        }
+
+        .yt-sidebar-title {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #F1F1F1;
+        }
+
+        /* ── YouTube Header ──────────────────────────────────── */
+        .yt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: #0F0F0F;
+            border-bottom: 1px solid #303030;
+            gap: 16px;
+        }
+
+        .yt-logo {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F1F1;
+            letter-spacing: -1px;
+        }
+
+        .yt-logo-icon {
+            width: 24px;
+            height: 18px;
+            background: #FF0000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 2px;
+        }
+
+        .yt-search-bar {
+            flex: 1;
+            max-width: 640px;
+            display: flex;
+            align-items: center;
+        }
+
+        .yt-search-input {
+            flex: 1;
+            background: #121212;
+            border: 1px solid #303030;
+            border-radius: 20px 0 0 20px;
+            padding: 6px 12px;
+            color: #F1F1F1;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .yt-search-input::placeholder {
+            color: #888;
+        }
+
+        .yt-search-btn {
+            width: 48px;
+            height: 32px;
+            background: #222;
+            border: 1px solid #303030;
+            border-left: none;
+            border-radius: 0 16px 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #F1F1F1;
+        }
+
+        .yt-search-btn:hover {
+            background: #303030;
+        }
+
+        .yt-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .yt-header-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #F1F1F1;
+            transition: background 0.2s;
+        }
+
+        .yt-header-btn:hover {
+            background: #272727;
+        }
+
+        .yt-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #065F46, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* ── YouTube Content Grid ─────────────────────────────── */
+        .yt-content {
+            background: #0F0F0F;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .yt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .yt-video-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .yt-video-card:hover {
+            transform: scale(1.02);
+        }
+
+        .yt-thumbnail {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .yt-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .yt-thumbnail-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .yt-duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .yt-video-info {
+            display: flex;
+            gap: 12px;
+        }
+
+        .yt-channel-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #272727;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .yt-video-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .yt-video-title {
+            color: #F1F1F1;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .yt-channel-name {
+            color: #AAAAAA;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .yt-video-stats {
+            color: #AAAAAA;
+            font-size: 11px;
+        }
+
+        /* ── YouTube Player Page ──────────────────────────────── */
+        .yt-player-page {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px;
+            padding: 16px;
+            background: #0F0F0F;
+        }
+
+        .yt-player-container {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .yt-player-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .yt-player-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .yt-play-btn {
+            width: 68px;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .yt-play-btn:hover {
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        .yt-player-info {
+            margin-top: 16px;
+        }
+
+        .yt-player-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #F1F1F1;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .yt-player-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #303030;
+        }
+
+        .yt-channel-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .yt-channel-avatar-lg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #065F46, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: white;
+        }
+
+        .yt-channel-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .yt-channel-name-lg {
+            font-size: 16px;
+            font-weight: 500;
+            color: #F1F1F1;
+        }
+
+        .yt-subscriber-count {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+
+        .yt-subscribe-btn {
+            background: #F1F1F1;
+            color: #0F0F0F;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: background 0.2s;
+        }
+
+        .yt-subscribe-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .yt-action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .yt-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #272727;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #F1F1F1;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .yt-action-btn:hover {
+            background: #3a3a3a;
+        }
+
+        /* ── Echo Breaker Button ──────────────────────────────── */
+        .yt-echo-breaker-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .yt-echo-breaker-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ── Inline Echo Breaker Button (Next to Share) ───────── */
+        .yt-echo-breaker-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #0891b2 100%);
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 18px;
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 
+                0 0 10px rgba(16, 185, 129, 0.6),
+                0 0 30px rgba(6, 182, 212, 0.4),
+                0 0 50px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            animation: echoBreakerPulse 1.5s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .yt-echo-breaker-inline::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255,255,255,0.15) 50%,
+                transparent 70%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        .yt-echo-breaker-inline::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 27px;
+            background: linear-gradient(135deg, #10b981, #06b6d4, #10b981);
+            z-index: -1;
+            opacity: 0.6;
+            animation: borderRotate 3s linear infinite;
+            filter: blur(4px);
+        }
+
+        @keyframes echoBreakerPulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(16, 185, 129, 0.6),
+                            0 0 30px rgba(6, 182, 212, 0.4),
+                            0 0 50px rgba(6, 182, 212, 0.2);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.9),
+                            0 0 40px rgba(6, 182, 212, 0.6),
+                            0 0 70px rgba(6, 182, 212, 0.4);
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes borderRotate {
+            0% { filter: blur(4px) hue-rotate(0deg); }
+            50% { filter: blur(6px) hue-rotate(20deg); }
+            100% { filter: blur(4px) hue-rotate(0deg); }
+        }
+
+        .yt-echo-breaker-inline:hover {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, #22d3ee 0%, #10b981 50%, #06b6d4 100%);
+            box-shadow: 
+                0 0 30px rgba(16, 185, 129, 0.9),
+                0 0 60px rgba(6, 182, 212, 0.7),
+                0 0 90px rgba(6, 182, 212, 0.4);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .yt-echo-breaker-inline:active {
+            transform: scale(0.95);
+        }
+
+        .yt-echo-breaker-inline .echo-icon {
+            width: 22px;
+            height: 22px;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+            animation: iconFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-2px) rotate(5deg); }
+        }
+
+        .yt-echo-breaker-inline .echo-text {
+            text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 30px rgba(16, 185, 129, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Analysis Panel Slide from Right ──────────────────── */
+        .yt-analysis-inside {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 420px;
+            max-width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 15, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
+            border-left: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .yt-analysis-inside.open {
+            transform: translateX(0);
+        }
+
+        .yt-analysis-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.08));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .yt-analysis-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .yt-analysis-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .yt-analysis-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* ── Slide Overlay Backdrop ────────────────────────────── */
+        .yt-analysis-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .yt-analysis-backdrop.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ── YouTube Sidebar Recommendations ─────────────────── */
+        .yt-sidebar-recs {
+            padding-left: 16px;
+        }
+
+        .yt-rec-header {
+            font-size: 16px;
+            font-weight: 500;
+            color: #F1F1F1;
+            margin-bottom: 12px;
+        }
+
+        .yt-rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .yt-rec-item {
+            display: flex;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .yt-rec-item:hover {
+            background: #272727;
+        }
+
+        .yt-rec-thumbnail {
+            width: 168px;
+            height: 94px;
+            background: #272727;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .yt-rec-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .yt-rec-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .yt-rec-algorithm-note {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #f87171;
+            margin-bottom: 8px;
+            padding: 4px 8px;
+            background: rgba(248, 113, 113, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #f87171;
+        }
+
+        .yt-rec-algorithm-box {
+            border: 2px dashed rgba(248, 113, 113, 0.4);
+            background: rgba(248, 113, 113, 0.03);
+            border-radius: 12px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .yt-rec-algorithm-box::before {
+            content: 'Algorithm Echo Chamber';
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            font-size: 9px;
+            color: #f87171;
+            background: #0F0F0F;
+            padding: 0 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .yt-rec-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #F1F1F1;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .yt-rec-channel {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+
+        /* ── Bubble Banner ───────────────────────────────────── */
+        .bubble-banner {
+            text-align: center;
+            padding: 40px 24px;
+            background: linear-gradient(180deg, rgba(6, 10, 20, 0) 0%, rgba(6, 10, 20, 0.8) 100%);
+        }
+
+        .bubble-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #F1F1F1;
+            margin-bottom: 8px;
+        }
+
+        .bubble-subtitle {
+            font-size: 18px;
+            color: #AAAAAA;
+            margin-bottom: 16px;
+        }
+
+        .bubble-description {
+            font-size: 14px;
+            color: #888;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ── Disclaimer ───────────────────────────────────────── */
+        .yt-disclaimer {
+            text-align: center;
+            padding: 20px 16px;
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #303030;
+            background: #0F0F0F;
+            flex-shrink: 0;
+        }
+
+        /* ── Responsive ──────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .yt-layout-main {
+                grid-template-columns: 72px 1fr;
+            }
+            
+            .yt-sidebar-item span {
+                display: none;
+            }
+            
+            .yt-sidebar-item {
+                justify-content: center;
+                padding: 16px;
+            }
+            
+            .yt-sidebar-title {
+                display: none;
+            }
+            
+            .yt-player-page {
+                grid-template-columns: 1fr;
+            }
+            
+            .yt-sidebar-recs {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .monitor-frame {
+                padding: 8px;
+                border-radius: 16px;
+            }
+            
+            .yt-layout-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .yt-sidebar {
+                display: none;
+            }
+            
+            .yt-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .yt-header {
+                padding: 8px 12px;
+            }
+            
+            .yt-search-bar {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -763,113 +1908,288 @@
     <div class="section-divider max-w-4xl mx-auto"></div>
 
     <!-- ============================================================ -->
-    <!-- SECTION 3 — INPUT (Dual Mode)                                 -->
+    <!-- SECTION 3 — REALISTIC YOUTUBE SIMULATION                       -->
     <!-- ============================================================ -->
-    <section class="max-w-3xl mx-auto px-6 mb-12" id="input-section">
+    <section class="max-w-7xl mx-auto px-6 mb-12" id="input-section">
 
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-white mb-1">Try it yourself</h2>
-            <p class="text-sm text-gray-400">Search a topic or paste a YouTube video link.</p>
+            <p class="text-sm text-gray-400">Experience how the algorithm creates echo chambers — then break them.</p>
         </div>
 
-        <!-- Echo Chamber wrapper -->
-        <div class="glass-tint-red rounded-3xl overflow-hidden">
-            <div class="h-[3px]" style="background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
+        <!-- Bubble Banner -->
+        <div class="bubble-banner mb-6">
+            <h3 class="bubble-title">You've been in an <span class="text-red-500">[Info-Echo]</span>.</h3>
+            <p class="bubble-subtitle">There's always another side.</p>
+            <p class="bubble-description">This simulation demonstrates how recommendation algorithms create information echo chambers. We're not criticizing YouTube — we're raising awareness about algorithmic effects on information diversity.</p>
+            <button id="try-now-btn" onclick="startSimulation()" class="mt-6 px-10 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300">
+                Try now
+            </button>
+        </div>
+
+        <!-- Real iMac Monitor with YouTube Simulation -->
+        <div class="simulation-wrapper">
+            <div class="simulation-label">Simulation Environment</div>
+            <div class="imac-container">
+            <div class="imac-frame">
+                <div class="imac-screen">
+                    <div class="imac-screen-content">
+                        <!-- YouTube Home View (Hidden initially) -->
+                        <div id="yt-home-view" class="yt-layout hidden">
+                            <div class="yt-layout-main">
+                                <!-- Sidebar -->
+                                <div class="yt-sidebar">
+                                    <div class="yt-sidebar-item active">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+                                        <span>Home</span>
+                                    </div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.53 11.2c-.23-.3-.5-.56-.76-.82-.65-.6-1.4-1.03-2.03-1.66-.43-.45-.8-.97-1.08-1.53-.23-.45-.36-.97-.36-1.49 0-.12 0-.25.02-.37.04-.78.29-1.53.72-2.17.51-.78 1.27-1.38 2.15-1.67.91-.3 1.9-.26 2.78.13.8.36 1.46.96 1.86 1.7.4.73.57 1.57.49 2.4-.04-.46-.17.9-.37 1.32-.23.47-.54.9-.9 1.27-.42.43-.9.78-1.4 1.1-.63.4-1.26.8-1.82 1.3-.2.18-.38.38-.54.6zM6.27 8.47c-.25-.3-.52-.56-.78-.82-.65-.6-1.4-1.03-2.03-1.66-.43-.45-.8-.97-1.08-1.53C1.15 4 1.02 3.48 1.02 2.96c0-.12 0-.25.02-.37.04-.78.29-1.53.72-2.17C2.27 0 3.03-.6 3.91-.89c.91-.3 1.9-.26 2.78.13.8.36 1.46.96 1.86 1.7.4.73.57 1.57.49 2.4-.04-.46-.17.9-.37 1.32-.23.47-.54.9-.9 1.27-.42-.43-.9.78-1.4 1.1-.63.4-1.26.8-1.82 1.3-.2.18-.38.38-.54.6z"/></svg>
+                                        <span>Shorts</span>
+                                    </div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 7H4V5h16v2zm-9 5H4v2h7v-2zm9 0h-7v2h7v-2zM4 17h16v2H4v-2z"/></svg>
+                                        <span>Subscriptions</span>
+                                    </div>
+                                    <div class="yt-sidebar-divider"></div>
+                                    <div class="yt-sidebar-title">You</div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/></svg>
+                                        <span>Your channel</span>
+                                    </div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+                                        <span>History</span>
+                                    </div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg>
+                                        <span>Your videos</span>
+                                    </div>
+                                    <div class="yt-sidebar-item">
+                                        <svg class="yt-sidebar-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+                                        <span>Watch later</span>
+                                    </div>
+                                </div>
+
+                                <!-- Main Content -->
+                                <div class="yt-bg">
+                                <!-- Header -->
+                                <div class="yt-header">
+                                    <div class="yt-logo">
+                                        <div class="yt-logo-icon">
+                                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                        YouTube
+                                    </div>
+                                    <div class="yt-search-bar">
+                                        <input type="text" id="yt-search-input" class="yt-search-input" placeholder="Search" onkeydown="if(event.key==='Enter') ytSearch()">
+                                        <button class="yt-search-btn" onclick="ytSearch()">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                                        </button>
+                                    </div>
+                                    <div class="yt-header-actions">
+                                        <div class="yt-header-btn">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                                        </div>
+                                        <div class="yt-header-btn">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+                                        </div>
+                                        <div class="yt-avatar">A</div>
+                                    </div>
+                                </div>
+
+                                <!-- Content Area -->
+                                <div class="yt-content">
+                                    <!-- Topic Chips -->
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('AI dangerous')">AI Dangerous</span>
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('climate change')">Climate Change</span>
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('vaccine')">Vaccine</span>
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('crypto')">Crypto</span>
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('election')">Election</span>
+                                        <span class="px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-colors" style="background:#272727;color:#F1F1F1;" onclick="ytQuickSearch('conspiracy')">Conspiracy</span>
+                                    </div>
+
+                                    <!-- Video Grid -->
+                                    <div id="yt-video-grid" class="yt-grid">
+                                        <!-- Videos will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Player View (Hidden by default) -->
+                        <div id="yt-player-view" class="yt-player-page hidden">
+                            <!-- Back Button -->
+                            <div style="grid-column: 1 / -1; margin-bottom: 16px;">
+                                <button onclick="closeYouTubePlayer()" class="yt-action-btn">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back to Home
+                                </button>
+                            </div>
+                            
+                            <!-- Left: Player -->
+                            <div>
+                                <div class="yt-player-container">
+                                    <img id="yt-player-thumbnail" src="" alt="">
+                                    <div class="yt-player-overlay">
+                                        <div class="yt-play-btn">
+                                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="yt-player-info">
+                                    <h1 id="yt-player-title" class="yt-player-title"></h1>
+                                    
+                                    <div class="yt-player-actions">
+                                        <div class="yt-channel-row">
+                                            <div id="yt-player-avatar" class="yt-channel-avatar-lg"></div>
+                                            <div class="yt-channel-info">
+                                                <div id="yt-player-channel" class="yt-channel-name-lg"></div>
+                                                <div id="yt-player-subs" class="yt-subscriber-count">1.2M subscribers</div>
+                                            </div>
+                                            <button class="yt-subscribe-btn">Subscribe</button>
+                                        </div>
+                                        <div class="yt-action-buttons">
+                                            <button class="yt-action-btn">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/></svg>
+                                                <span id="yt-likes">12K</span>
+                                            </button>
+                                            <button class="yt-action-btn">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M15 5.63V4h-1.5v1.63c.8.33 1.5.9 1.97 1.62l1.43-.88c-.68-1.1-1.81-1.9-3.15-2.26L14.18 2H12v2.06c-.37.05-.73.14-1.07.26l.72 1.41c.38-.15.79-.23 1.21-.23.74 0 1.43.22 2.01.6l1.17-.72c-.35-.23-.75-.41-1.18-.52L14 5.63V5h-1.5v.63c-.45.18-.87.43-1.23.75l1.21 1.07c.53-.47 1.23-.75 2.02-.75s1.49.28 2.02.75l1.21-1.07c-.36-.32-.78-.57-1.23-.75V5zM1 14c0-1.1.9-2 2-2h3.17L6 10.4V4h12v10.42l-1.83 4.23c-.17.4-.55.67-.98.67H3c-1.1 0-2-.9-2-2v-3z"/></svg>
+                                                Share
+                                            </button>
+                                            <button onclick="triggerEchoBreaker()" class="yt-echo-breaker-inline">
+                                                <svg class="w-5 h-5 echo-icon" viewBox="0 0 32 32" fill="none">
+                                                    <defs>
+                                                        <linearGradient id="echoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                            <stop offset="0%" style="stop-color:#10b981"/>
+                                                            <stop offset="50%" style="stop-color:#06b6d4"/>
+                                                            <stop offset="100%" style="stop-color:#10b981"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <circle cx="16" cy="16" r="14" stroke="url(#echoGrad)" stroke-width="2.5" fill="none"/>
+                                                    <path d="M16 6 L16 16 L22 12" stroke="url(#echoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <circle cx="16" cy="16" r="3" fill="url(#echoGrad)"/>
+                                                </svg>
+                                                <span class="echo-text">EchoBreaker</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="yt-description" class="mt-4 rounded-xl p-3" style="background:#272727;">
+                                        <p class="text-sm text-gray-300">Select a video to see details</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Recommendations -->
+                            <div class="yt-sidebar-recs">
+                                <div class="yt-rec-header">Up next</div>
+                                <div class="yt-rec-algorithm-note">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    See what the Algorithm recommends you
+                                </div>
+                                <div id="yt-rec-list" class="yt-rec-list yt-rec-algorithm-box">
+                                    <!-- Recommendations loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Backdrop -->
+                        <div id="yt-analysis-backdrop" class="yt-analysis-backdrop" onclick="closeYouTubeAnalysis()"></div>
+
+                        <!-- Analysis Panel (Slide from Right) -->
+                        <div id="yt-analysis-panel" class="yt-analysis-inside">
+                            <div class="yt-analysis-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(16, 185, 129, 0.2);">
+                                        <svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-bold uppercase tracking-wider text-accent">EchoBreaker</div>
+                                        <div class="text-[10px] text-gray-400">Breaking the echo chamber</div>
+                                    </div>
+                                </div>
+                                <button onclick="closeYouTubeAnalysis()" class="yt-analysis-close">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="yt-analysis-content" class="yt-analysis-content">
+                                <p class="text-sm text-gray-400">Analyzing video...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="imac-glow"></div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Hidden URL Mode for Direct Analysis -->
+        <div id="url-mode-panel" class="hidden mt-6 glass-tint-green rounded-3xl overflow-hidden">
             <div class="p-6">
-
-                <!-- Header -->
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);">
-                        <svg class="w-5 h-5" fill="#ff0000" viewBox="0 0 24 24">
-                            <path
-                                d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="text-xs font-black uppercase tracking-[0.16em]" style="color:#f87171;">Echo
-                            Chamber</div>
-                        <div class="text-xs text-gray-400">Search a topic or paste a URL — see what the
-                            algorithm would feed you next</div>
-                    </div>
-                </div>
-
-                <!-- Mode Tabs -->
-                <div class="flex items-center gap-2 mb-4 glass-subtle rounded-xl p-1.5 w-fit">
-                    <button id="tab-search" onclick="switchMode('search')"
-                        class="mode-tab active flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg border">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Search Topic
-                    </button>
-                    <button id="tab-url" onclick="switchMode('url')"
-                        class="mode-tab flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg border">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                        Paste URL
-                    </button>
-                </div>
-
-                <!-- Search Mode -->
-                <div id="mode-search" class="animate-fadeIn">
-                    <div class="glass-subtle rounded-xl p-2 transition-all duration-300 input-focus">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <div class="text-xs font-black uppercase tracking-[0.16em] text-accent mb-4">Direct URL Analysis</div>
+                <div class="glass-subtle rounded-xl p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="urlInput"
+                            class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm px-3 py-2.5 outline-none"
+                            placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false"
+                            onkeydown="if(event.key==='Enter') analyze()">
+                        <button id="analyzeBtn" onclick="analyze()"
+                            class="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-150"
+                            style="background:linear-gradient(135deg,#10b981,#059669);">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            <input type="text" id="searchInput"
-                                class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm px-2 py-2.5 outline-none"
-                                placeholder="e.g. Is AI dangerous? Climate change solutions..." autocomplete="off"
-                                spellcheck="false" onkeydown="if(event.key==='Enter') searchTopic()">
-                            <button id="searchBtn" onclick="searchTopic()"
-                                class="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-150 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
-                                style="background:linear-gradient(135deg,#ef4444,#dc2626);">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                    <div id="search-results" class="mt-4"></div>
-                </div>
-
-                <!-- URL Mode -->
-                <div id="mode-url" class="hidden animate-fadeIn">
-                    <div class="glass-subtle rounded-xl p-2 transition-all duration-300 input-focus">
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="urlInput"
-                                class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm px-3 py-2.5 outline-none"
-                                placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false"
-                                onkeydown="if(event.key==='Enter') analyze()">
-                            <button id="analyzeBtn" onclick="analyze()"
-                                class="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-150 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
-                                style="background:linear-gradient(135deg,#10b981,#059669);">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                Break the Echo
-                            </button>
-                        </div>
+                            Analyze
+                        </button>
                     </div>
                 </div>
-
             </div>
         </div>
 
         <!-- Error -->
-        <div id="errorMsg"
-            class="hidden mt-3 text-sm text-danger-light bg-danger-bg border border-danger-border rounded-xl px-4 py-3">
-        </div>
+        <div id="errorMsg" class="hidden mt-3 text-sm text-danger-light bg-danger-bg border border-danger-border rounded-xl px-4 py-3"></div>
+
     </section>
+
+    <!-- ANALYSIS OVERLAY -->
+    <div id="analysis-backdrop" class="analysis-overlay-backdrop" onclick="closeAnalysisOverlay()"></div>
+    <div id="analysis-overlay" class="analysis-overlay">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center glass-tint-green">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold uppercase tracking-wider text-accent">EchoBreaker Analysis</div>
+                        <div class="text-xs text-gray-400">Breaking the echo chamber</div>
+                    </div>
+                </div>
+                <button onclick="closeAnalysisOverlay()" class="glass-subtle rounded-lg p-2 text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="analysis-content">
+                <p class="text-sm text-gray-400">Analyzing video...</p>
+            </div>
+        </div>
+    </div>
 
     <!-- ============================================================ -->
     <!-- LOADING STATE                                                 -->
@@ -1211,9 +2531,784 @@
         function analyzeFromSearch(url, cardEl) {
             document.querySelectorAll('.video-card').forEach(c => c.classList.remove('ring-2', 'ring-accent/50'));
             if (cardEl) cardEl.classList.add('ring-2', 'ring-accent/50');
-            switchMode('url');
-            document.getElementById('urlInput').value = url;
-            analyze();
+            // Open YouTube player view
+            openYouTubePlayer({ url: url });
+        }
+
+        // ─── YouTube Simulation State ─────────────────────────────
+        let currentVideo = null;
+        let ytCurrentVideo = null;
+
+        // ─── YouTube Quick Search ─────────────────────────────────
+        function ytQuickSearch(topic) {
+            document.getElementById('yt-search-input').value = topic;
+            ytSearch();
+        }
+
+        // ─── YouTube Search ────────────────────────────────────────
+        async function ytSearch() {
+            const query = document.getElementById('yt-search-input').value.trim();
+            const grid = document.getElementById('yt-video-grid');
+
+            if (!query) return;
+
+            grid.innerHTML = '<div class="col-span-full text-center py-8"><div class="spinner mx-auto"></div><p class="text-gray-400 mt-4">Searching...</p></div>';
+
+            try {
+                const resp = await fetch(`${API}/api/search-sources`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ youtube_query: query, limit: 12 }),
+                });
+
+                if (!resp.ok) throw new Error(`Search failed (${resp.status})`);
+                const videos = await resp.json();
+                
+                // Debug: Log first video to check thumbnail data
+                if (videos.length > 0) {
+                    console.log('First video data:', videos[0]);
+                    console.log('Thumbnail URL:', videos[0].thumbnail);
+                }
+
+                if (!videos.length) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400">No videos found for "${esc(query)}"</div>`;
+                } else {
+                    renderYouTubeGrid(videos);
+                }
+            } catch (e) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400">${esc(e.message || 'Search failed')}</div>`;
+            }
+        }
+
+        // ─── Render YouTube Video Grid ─────────────────────────────
+        function renderYouTubeGrid(videos) {
+            const grid = document.getElementById('yt-video-grid');
+            
+            grid.innerHTML = videos.map((v, i) => {
+                // Try to get thumbnail from API or generate from video URL
+                let thumb = v.thumbnail || '';
+                if (!thumb && v.url) {
+                    thumb = getYouTubeThumbnail(v.url);
+                }
+                
+                // Parse duration - API returns string like "10:23" or seconds
+                let duration = v.duration || '10:23';
+                if (typeof v.duration === 'number') {
+                    duration = formatDuration(v.duration);
+                }
+                const views = formatYouTubeViews(v.view_count || Math.floor(Math.random() * 5000000));
+                const timeAgo = formatTimeAgo(Math.floor(Math.random() * 365));
+                const channelInitial = (v.channel_name || 'C')[0].toUpperCase();
+                
+                // Create a fallback gradient based on title
+                const gradientColors = [
+                    'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                    'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                    'linear-gradient(135deg, #45B7D1 0%, #96C93D 100%)',
+                    'linear-gradient(135deg, #96CEB4 0%, #FFECD2 100%)',
+                    'linear-gradient(135deg, #A8EDEA 0%, #FED6E3 100%)',
+                    'linear-gradient(135deg, #D299C2 0%, #FEF9D7 100%)',
+                    'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)'
+                ];
+                const colorIndex = v.title.length % gradientColors.length;
+                const fallbackBg = gradientColors[colorIndex];
+                
+                return `
+                <div class="yt-video-card" onclick="openYouTubePlayer({url:'${esc(v.url)}',title:'${esc(v.title)}',thumbnail:'${esc(thumb)}',channel:'${esc(v.channel_name || 'Channel')}',duration:'${esc(duration)}',views:'${views}'})">
+                    <div class="yt-thumbnail" style="${!thumb ? `background: ${fallbackBg};` : 'background: #272727;'}">
+                        ${thumb ? `<img src="${esc(thumb)}" loading="lazy" onerror="this.style.display='none'; this.parentElement.querySelector('.yt-thumb-fallback').style.display='flex';" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2;"><div class="yt-thumb-fallback yt-thumbnail-placeholder" style="display:none; position:absolute; top:0; left:0; z-index:1; background:${fallbackBg};">${channelInitial}</div>` : `<div class="yt-thumbnail-placeholder" style="background:${fallbackBg};">${channelInitial}</div>`}
+                        <span class="yt-duration">${esc(duration)}</span>
+                    </div>
+                    <div class="yt-video-info">
+                        <div class="yt-channel-avatar">${channelInitial}</div>
+                        <div class="yt-video-meta">
+                            <h3 class="yt-video-title">${esc(v.title)}</h3>
+                            <div class="yt-channel-name">${esc(v.channel_name || 'Channel Name')}</div>
+                            <div class="yt-video-stats">${views} views • ${timeAgo}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ─── Format YouTube Views ─────────────────────────────────
+        function formatYouTubeViews(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // ─── Format Time Ago ─────────────────────────────────────
+        function formatTimeAgo(days) {
+            if (days < 1) return '1 day ago';
+            if (days < 7) return days + ' days ago';
+            if (days < 30) return Math.floor(days / 7) + ' weeks ago';
+            if (days < 365) return Math.floor(days / 30) + ' months ago';
+            return Math.floor(days / 365) + ' years ago';
+        }
+
+        // ─── Format Duration MM:SS ─────────────────────────────────
+        function formatDuration(seconds) {
+            if (!seconds || isNaN(seconds)) return '10:23';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // ─── Get YouTube Thumbnail URL from Video URL ─────────────
+        function getYouTubeThumbnail(videoUrl) {
+            if (!videoUrl) return '';
+            
+            // Extract video ID from various YouTube URL formats
+            let videoId = '';
+            
+            // youtube.com/watch?v=VIDEO_ID
+            const watchMatch = videoUrl.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+            if (watchMatch) videoId = watchMatch[1];
+            
+            // youtu.be/VIDEO_ID
+            const shortMatch = videoUrl.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+            if (shortMatch) videoId = shortMatch[1];
+            
+            // youtube.com/embed/VIDEO_ID
+            const embedMatch = videoUrl.match(/embed\/([a-zA-Z0-9_-]{11})/);
+            if (embedMatch) videoId = embedMatch[1];
+            
+            if (videoId) {
+                // Return high quality thumbnail URL
+                return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            }
+            
+            return '';
+        }
+
+        // ─── Open YouTube Player ──────────────────────────────────
+        async function openYouTubePlayer(video) {
+            ytCurrentVideo = video;
+            currentVideo = video;
+
+            // Hide home view, show player view
+            document.getElementById('yt-home-view').classList.add('hidden');
+            document.getElementById('yt-player-view').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            // Update player info
+            document.getElementById('yt-player-thumbnail').src = video.thumbnail || '';
+            document.getElementById('yt-player-title').textContent = video.title || 'Unknown Video';
+            document.getElementById('yt-player-channel').textContent = video.channel || 'Unknown Channel';
+            document.getElementById('yt-player-avatar').textContent = (video.channel || 'C')[0].toUpperCase();
+            
+            // Generate random likes
+            const likes = Math.floor(Math.random() * 50) + 1;
+            document.getElementById('yt-likes').textContent = likes + 'K';
+
+            // Load recommendations
+            await loadYouTubeRecommendations(video.url);
+
+            // Scroll to player
+            setTimeout(() => document.getElementById('yt-player-view').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
+
+        // ─── Close YouTube Player ─────────────────────────────────
+        function closeYouTubePlayer() {
+            document.getElementById('yt-player-view').classList.add('hidden');
+            document.getElementById('yt-home-view').classList.remove('hidden');
+            closeAnalysisOverlay();
+            ytCurrentVideo = null;
+            currentVideo = null;
+        }
+
+        // ─── Start YouTube Simulation ─────────────────────────────
+        function startSimulation() {
+            // Add background to screen
+            document.getElementById('yt-home-view').parentElement.parentElement.classList.add('has-content');
+            // Add background to screen content
+            document.getElementById('yt-home-view').parentElement.classList.add('has-content');
+            // Show YouTube home view
+            document.getElementById('yt-home-view').classList.remove('hidden');
+            // Load initial videos
+            loadYouTubeVideos();
+        }
+
+        // ─── Load Initial YouTube Videos ───────────────────────────
+        async function loadYouTubeVideos() {
+            const grid = document.getElementById('yt-video-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-8"><div class="spinner mx-auto"></div><p class="text-gray-400 mt-4">Loading videos...</p></div>';
+            
+            try {
+                const resp = await fetch(`${API}/api/search-sources`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ youtube_query: 'AI dangerous', limit: 12 }),
+                });
+                
+                if (!resp.ok) throw new Error('Failed to load videos');
+                const videos = await resp.json();
+                renderYouTubeGrid(videos);
+            } catch (e) {
+                console.log('Using mock videos');
+                const mockVideos = generateMockVideos('AI dangerous');
+                renderYouTubeGrid(mockVideos);
+            }
+        }
+
+        // ─── Load YouTube Recommendations ──────────────────────────
+        async function loadYouTubeRecommendations(videoUrl) {
+            const list = document.getElementById('yt-rec-list');
+            
+            list.innerHTML = '<p class="text-sm text-gray-400">Loading...</p>';
+
+            try {
+                // Get echo chamber query from analysis
+                const resp = await fetch(`${API}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: videoUrl }),
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const query = data.echo_chamber_query || 'related';
+                    
+                    const searchResp = await fetch(`${API}/api/search-sources`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ youtube_query: query, limit: 12 }),
+                    });
+
+                    if (searchResp.ok) {
+                        const videos = await searchResp.json();
+                        const filtered = videos.filter(v => v.url !== videoUrl).slice(0, 5);
+                        renderYouTubeRecommendations(filtered);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log('Using mock recommendations');
+            }
+
+            // Fallback to mock data
+            renderYouTubeRecommendations(generateMockVideos('related'));
+        }
+
+        // ─── Render YouTube Recommendations ───────────────────────
+        function renderYouTubeRecommendations(videos) {
+            const list = document.getElementById('yt-rec-list');
+            
+            if (!videos.length) {
+                list.innerHTML = '<p class="text-sm text-gray-400">No recommendations</p>';
+                return;
+            }
+
+            list.innerHTML = videos.slice(0, 5).map(v => {
+                // Try to get thumbnail from API or generate from video URL
+                let thumb = v.thumbnail || '';
+                if (!thumb && v.url) {
+                    thumb = getYouTubeThumbnail(v.url);
+                }
+                
+                const views = formatYouTubeViews(v.view_count || Math.floor(Math.random() * 1000000));
+                const duration = typeof v.duration === 'number' ? formatDuration(v.duration) : (v.duration || '10:23');
+                const channelInitial = (v.channel_name || 'C')[0].toUpperCase();
+                
+                // Fallback gradient for recs
+                const gradientColors = [
+                    'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                    'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                    'linear-gradient(135deg, #45B7D1 0%, #96C93D 100%)',
+                    'linear-gradient(135deg, #96CEB4 0%, #FFECD2 100%)',
+                    'linear-gradient(135deg, #A8EDEA 0%, #FED6E3 100%)'
+                ];
+                const colorIndex = (v.title || '').length % gradientColors.length;
+                const fallbackBg = gradientColors[colorIndex];
+                
+                return `
+                <div class="yt-rec-item" onclick="openYouTubePlayer({url:'${esc(v.url)}',title:'${esc(v.title)}',thumbnail:'${esc(thumb)}',channel:'${esc(v.channel_name || 'Channel')}',duration:'${esc(duration)}',views:'${views}'})">
+                    <div class="yt-rec-thumbnail" style="${!thumb ? `background: ${fallbackBg};` : 'background: #272727;'}">
+                        ${thumb ? `<img src="${esc(thumb)}" loading="lazy" onerror="this.style.display='none'; this.parentElement.querySelector('.yt-rec-fallback').style.display='flex';" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2;"><div class="yt-rec-fallback yt-thumbnail-placeholder" style="display:none; position:absolute; top:0; left:0; z-index:1; background:${fallbackBg}; width:100%; height:100%;">${channelInitial}</div>` : `<div class="yt-thumbnail-placeholder" style="background:${fallbackBg}; width:100%; height:100%;">${channelInitial}</div>`}
+                        <span class="yt-duration" style="position:absolute;bottom:4px;right:4px;font-size:11px;background:rgba(0,0,0,0.8);padding:2px 4px;border-radius:2px;color:white; z-index:3;">${esc(duration)}</span>
+                    </div>
+                    <div class="yt-rec-info">
+                        <div class="yt-rec-title">${esc(v.title)}</div>
+                        <div class="yt-rec-channel">${esc(v.channel_name || 'Channel')}</div>
+                        <div class="yt-rec-channel">${views} views</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ─── Trigger EchoBreaker from YouTube Player ──────────────
+        async function triggerEchoBreaker() {
+            if (!ytCurrentVideo || !ytCurrentVideo.url) {
+                showError('No video selected');
+                return;
+            }
+
+            // Open analysis panel inside monitor
+            openYouTubeAnalysis();
+
+            try {
+                const resp = await fetch(`${API}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: ytCurrentVideo.url }),
+                });
+
+                if (!resp.ok) throw new Error('Analysis failed');
+                
+                const data = await resp.json();
+                renderYouTubeAnalysisResults(data);
+
+            } catch (e) {
+                document.getElementById('yt-analysis-content').innerHTML = `<p class="text-sm text-danger-light">${esc(e.message || 'Analysis failed')}</p>`;
+            }
+        }
+
+        // ─── Open YouTube Analysis Panel ───────────────────────────
+        function openYouTubeAnalysis() {
+            document.getElementById('yt-analysis-backdrop').classList.add('open');
+            document.getElementById('yt-analysis-panel').classList.add('open');
+            document.getElementById('yt-analysis-content').innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="spinner mb-4"></div>
+                    <p class="text-sm text-gray-400">Analyzing video with EchoBreaker...</p>
+                </div>
+            `;
+        }
+
+        // ─── Close YouTube Analysis Panel ──────────────────────────
+        function closeYouTubeAnalysis() {
+            document.getElementById('yt-analysis-backdrop').classList.remove('open');
+            document.getElementById('yt-analysis-panel').classList.remove('open');
+        }
+
+        // ─── State ────────────────────────────────────────────────
+        let currentView = 'search'; // 'search' | 'player' | 'analysis'
+
+        // ─── Quick Search from Topic Chips ──────────────────────────
+        function quickSearch(topic) {
+            document.getElementById('searchInput').value = topic;
+            searchTopic();
+        }
+
+        // ─── Open Player View ──────────────────────────────────────
+        async function openPlayerView(video) {
+            currentVideo = video;
+            currentView = 'player';
+
+            // Hide search view, show player view
+            document.getElementById('search-view').classList.add('hidden');
+            document.getElementById('player-view').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            // Render mock player
+            renderMockPlayer(video);
+
+            // Load echo chamber recommendations
+            if (video.url) {
+                loadEchoChamberVideos(video.url);
+            } else {
+                // Use mock data if no URL
+                const mockVideos = generateMockVideos('controversial topic');
+                renderRecommendations(mockVideos);
+            }
+
+            // Scroll to player view
+            setTimeout(() => document.getElementById('player-view').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
+
+        // ─── Close Player View ─────────────────────────────────────
+        function closePlayerView() {
+            currentView = 'search';
+            currentVideo = null;
+
+            document.getElementById('player-view').classList.add('hidden');
+            document.getElementById('search-view').classList.remove('hidden');
+
+            // Close analysis overlay if open
+            closeAnalysisOverlay();
+        }
+
+        // ─── Render Mock Player ───────────────────────────────────
+        function renderMockPlayer(video) {
+            const thumbnail = video.thumbnail || '';
+            const title = video.title || 'Unknown Video';
+            const channel = video.channel_name || 'Unknown Channel';
+            const views = video.view_count ? formatViews(video.view_count) : '0 views';
+
+            document.getElementById('player-thumbnail').src = thumbnail;
+            document.getElementById('player-title').textContent = title;
+            document.getElementById('player-channel').innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> ${esc(channel)}`;
+            document.getElementById('player-views').innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> ${esc(views)}`;
+        }
+
+        // ─── Load Echo Chamber Videos ─────────────────────────────
+        async function loadEchoChamberVideos(videoUrl) {
+            const container = document.getElementById('recommendations-list');
+            const mobileContainer = document.getElementById('mobileRecommendations');
+
+            // Show loading state
+            container.innerHTML = '<p class="text-xs text-gray-400">Loading recommendations...</p>';
+            mobileContainer.innerHTML = '<p class="text-xs text-gray-400">Loading...</p>';
+
+            try {
+                // Try to use the echo chamber query from analysis
+                const resp = await fetch(`${API}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: videoUrl }),
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const query = data.echo_chamber_query || 'related videos';
+                    
+                    // Search for echo chamber videos
+                    const searchResp = await fetch(`${API}/api/search-sources`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ youtube_query: query, limit: 6 }),
+                    });
+
+                    if (searchResp.ok) {
+                        const videos = await searchResp.json();
+                        const filteredVideos = videos.filter(v => v.url !== videoUrl).slice(0, 5);
+                        renderRecommendations(filteredVideos);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log('Using mock data for recommendations');
+            }
+
+            // Fallback to mock data
+            const mockVideos = generateMockVideos('related');
+            renderRecommendations(mockVideos);
+        }
+
+        // ─── Render Recommendations ────────────────────────────────
+        function renderRecommendations(videos) {
+            const container = document.getElementById('recommendations-list');
+            const mobileContainer = document.getElementById('mobileRecommendations');
+
+            if (!videos.length) {
+                container.innerHTML = '<p class="text-xs text-gray-400">No recommendations found.</p>';
+                mobileContainer.innerHTML = '<p class="text-xs text-gray-400">No recommendations.</p>';
+                return;
+            }
+
+            const html = videos.map((v, i) => {
+                const thumb = v.thumbnail
+                    ? `<img src="${esc(v.thumbnail)}" class="rec-thumbnail" onerror="this.style.display='none'">`
+                    : `<div class="rec-thumbnail glass flex items-center justify-center"><svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+
+                return `
+                <div class="rec-video-card animate-slideIn" style="animation-delay:${i * 0.08}s" onclick="openPlayerView({url:'${esc(v.url)}', title:'${esc(v.title)}', thumbnail:'${esc(v.thumbnail || '')}', channel_name:'${esc(v.channel_name || '')}', view_count:${v.view_count || 0}})">
+                    ${thumb}
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-semibold text-gray-300 leading-snug line-clamp-2">${esc(v.title)}</div>
+                        <div class="text-[0.7rem] text-gray-500 mt-1">${esc(v.channel_name || 'Unknown')}</div>
+                        <div class="text-[0.65rem] text-gray-400 mt-0.5">${v.view_count ? formatViews(v.view_count) : '0 views'}</div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            container.innerHTML = html;
+            mobileContainer.innerHTML = html;
+        }
+
+        // ─── Generate Mock Videos ───────────────────────────────────
+        function generateMockVideos(topic) {
+            const prefixes = ['Why', 'How', 'The Truth About', 'What Nobody Tells You About', 'The Real Reason'];
+            const topics = {
+                'AI dangerous': ['AI Will Destroy Humanity', 'AI Safety Crisis', 'The AI Apocalypse', 'Why AI is Dangerous', 'AI: Existential Threat'],
+                'climate change': ['Climate Change Hoax', 'Global Warming Myth', 'Climate Crisis Real', 'Climate Change Facts', 'The Climate Agenda'],
+                'vaccine': ['Vaccine Dangers', 'Vaccine Side Effects', 'Vaccine Truth', 'Vaccine Risks', 'Vaccine Safety Concerns'],
+                'crypto': ['Crypto Will Crash', 'Bitcoin Bubble', 'Crypto Scam', 'Investment Warning', 'Crypto Danger'],
+                'default': ['The Controversy', 'Shocking Truth', 'What They Hide', 'The Real Story', 'Breaking News']
+            };
+
+            const topicKey = Object.keys(topics).find(k => topic.toLowerCase().includes(k.toLowerCase())) || 'default';
+            const titles = topics[topicKey];
+
+            const channels = ['Truth Seeker', 'Investigative Reports', 'Breaking News', 'The Real Story', 'Uncovered Truth'];
+            const views = [1200000, 890000, 560000, 340000, 210000];
+
+            return titles.map((title, i) => ({
+                title: title,
+                url: '#',
+                thumbnail: '',
+                channel_name: channels[i % channels.length],
+                view_count: views[i % views.length]
+            }));
+        }
+
+        // ─── Format Views ──────────────────────────────────────────
+        function formatViews(count) {
+            if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M views';
+            if (count >= 1000) return (count / 1000).toFixed(1) + 'K views';
+            return count + ' views';
+        }
+
+        // ─── Trigger EchoBreaker Analysis ───────────────────────────
+        async function triggerEchoBreaker() {
+            if (!currentVideo || !currentVideo.url) {
+                showError('No video selected for analysis.');
+                return;
+            }
+
+            // Open analysis overlay
+            openAnalysisOverlay();
+
+            // Show loading state
+            document.getElementById('analysis-content').innerHTML = '<p class="text-sm text-gray-400">Analyzing video...</p>';
+
+            try {
+                const resp = await fetch(`${API}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: currentVideo.url }),
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Server error (${resp.status})`);
+                }
+
+                const data = await resp.json();
+                renderAnalysisResults(data);
+
+            } catch (e) {
+                document.getElementById('analysis-content').innerHTML = `<p class="text-sm text-danger-light">${esc(e.message || 'Analysis failed.')}</p>`;
+            }
+        }
+
+        // ─── Render Analysis Results in Overlay ─────────────────────
+        function renderAnalysisResults(data) {
+            const counters = data.counter_arguments || [];
+            const m = data.video_metadata || {};
+
+            // Helper function to highlight important keywords
+            function highlightKeywords(text) {
+                // Highlight words like "dangerous", "safe", "evidence", "research", etc.
+                const keywords = ['dangerous', 'safe', 'evidence', 'research', 'study', 'proves', 'shows', 'fact', 'myth', 'truth', 'false', 'real', 'fake', 'risks', 'benefits', 'harm', 'help'];
+                let highlighted = esc(text);
+                keywords.forEach(kw => {
+                    const regex = new RegExp(`\\b(${kw})\\b`, 'gi');
+                    highlighted = highlighted.replace(regex, '<span style="color:#10b981; font-weight:600;">$1</span>');
+                });
+                return highlighted;
+            }
+
+            // Helper to format text as bullet points
+            function formatAsBullets(text) {
+                if (!text) return '';
+                // Split by periods or newlines and create bullet points
+                const points = text.split(/[.!?]+/).filter(p => p.trim().length > 10);
+                if (points.length <= 1) {
+                    // If only one sentence, split by commas or semicolons
+                    const subPoints = text.split(/[,;]+/).filter(p => p.trim().length > 15);
+                    if (subPoints.length > 1) {
+                        return '<ul class="space-y-2 mt-2">' + subPoints.map(p => 
+                            `<li class="flex items-start gap-2"><span style="color:#f87171; font-weight:bold; margin-top:2px;">•</span><span class="text-sm leading-relaxed" style="color:#fca5a5;">${highlightKeywords(p.trim())}</span></li>`
+                        ).join('') + '</ul>';
+                    }
+                }
+                return '<ul class="space-y-2 mt-2">' + points.slice(0, 4).map(p => 
+                    `<li class="flex items-start gap-2"><span style="color:#f87171; font-weight:bold; margin-top:2px;">•</span><span class="text-sm leading-relaxed" style="color:#fca5a5;">${highlightKeywords(p.trim())}</span></li>`
+                ).join('') + '</ul>';
+            }
+
+            let html = `
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold text-white mb-2">${esc(m.video_title || 'Unknown')}</h4>
+                    <div class="text-xs text-gray-400 mb-4">${esc(m.channel_name || 'Unknown')} • ${esc(m.duration || 'N/A')}</div>
+                    
+                    <div class="rounded-xl px-4 py-4 glass-subtle mb-4" style="background: rgba(239, 68, 68, 0.08); border:1px solid rgba(239,68,68,0.2);">
+                        <div class="text-[0.7rem] font-black uppercase tracking-widest mb-3 flex items-center gap-2" style="color:#f87171;">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            Primary Claim (What the video argues)
+                        </div>
+                        ${formatAsBullets(data.primary_claim || 'No primary claim identified.')}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="h-px flex-1" style="background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);"></div>
+                    <span class="text-[0.7rem] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Counter Perspectives (Alternative views)
+                    </span>
+                    <div class="h-px flex-1" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08));"></div>
+                </div>
+            `;
+
+            if (counters.length === 0) {
+                html += '<p class="text-sm text-gray-400">No counter-perspectives available.</p>';
+            } else {
+                html += '<div class="space-y-4">' + counters.map((c, i) => {
+                    const cfg = DIM[c.type] || DIM.Ethical;
+                    const why = c.why_it_matters || '';
+                    const ref = c.academic_ref || '';
+
+                    // Format counter argument key points as bullets
+                    function formatCounterBullets(text) {
+                        if (!text) return '';
+                        const points = text.split(/[.!?]+/).filter(p => p.trim().length > 10);
+                        if (points.length <= 1) {
+                            return `<p class="text-sm leading-relaxed text-gray-200">${highlightKeywords(text)}</p>`;
+                        }
+                        return '<ul class="space-y-2">' + points.slice(0, 3).map(p => 
+                            `<li class="flex items-start gap-2"><span style="color:' + cfg.accent + '; font-weight:bold; margin-top:2px;">→</span><span class="text-sm leading-relaxed text-gray-200">${highlightKeywords(p.trim())}</span></li>`
+                        ).join('') + '</ul>';
+                    }
+
+                    return `
+                    <div class="rounded-2xl overflow-hidden" style="background:${cfg.accentDim}; border:1px solid ${cfg.accentBdr};">
+                        <div class="h-1" style="background:${cfg.topBar};"></div>
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:${cfg.dotBg}; color:${cfg.accent};">
+                                    ${cfg.icon}
+                                </div>
+                                <span class="text-[0.65rem] font-black uppercase tracking-[0.18em]" style="color:${cfg.accent};">${esc(cfg.label)}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-white mb-3" style="color:${cfg.accent};">${esc(c.title)}</h3>
+                            <div class="mb-3">${formatCounterBullets(c.key_point)}</div>
+                            ${why ? `<div class="rounded-lg px-3 py-3 mb-2" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);"><div class="text-[0.6rem] font-black uppercase tracking-widest mb-2 flex items-center gap-1" style="color:${cfg.accent};"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>Why this matters</div><p class="text-xs leading-relaxed text-gray-300">${highlightKeywords(why)}</p></div>` : ''}
+                            ${ref ? `<p class="text-[0.7rem] text-gray-500 flex items-center gap-1 mt-2"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2 .9 2 2v4.2l1.81 1.03c.81.47 1.21 1.24 1.09 2.06z"/></svg> ${esc(ref)}</p>` : ''}
+                        </div>
+                    </div>`;
+                }).join('') + '</div>';
+            }
+
+            document.getElementById('analysis-content').innerHTML = html;
+        }
+
+        // ─── Render Analysis Results for YouTube Inside Monitor ────
+        function renderYouTubeAnalysisResults(data) {
+            const counters = data.counter_arguments || [];
+            const m = data.video_metadata || {};
+
+            // Helper function to highlight important keywords
+            function highlightKeywords(text) {
+                const keywords = ['dangerous', 'safe', 'evidence', 'research', 'study', 'proves', 'shows', 'fact', 'myth', 'truth', 'false', 'real', 'fake', 'risks', 'benefits', 'harm', 'help'];
+                let highlighted = esc(text);
+                keywords.forEach(kw => {
+                    const regex = new RegExp(`\\b(${kw})\\b`, 'gi');
+                    highlighted = highlighted.replace(regex, '<span style="color:#10b981; font-weight:600;">$1</span>');
+                });
+                return highlighted;
+            }
+
+            // Helper to format text as bullet points
+            function formatAsBullets(text) {
+                if (!text) return '';
+                const points = text.split(/[.!?]+/).filter(p => p.trim().length > 10);
+                if (points.length <= 1) {
+                    const subPoints = text.split(/[,;]+/).filter(p => p.trim().length > 15);
+                    if (subPoints.length > 1) {
+                        return '<ul class="space-y-2 mt-2">' + subPoints.map(p => 
+                            `<li class="flex items-start gap-2"><span style="color:#f87171; font-weight:bold; margin-top:2px;">•</span><span class="text-sm leading-relaxed" style="color:#fca5a5;">${highlightKeywords(p.trim())}</span></li>`
+                        ).join('') + '</ul>';
+                    }
+                }
+                return '<ul class="space-y-2 mt-2">' + points.slice(0, 4).map(p => 
+                    `<li class="flex items-start gap-2"><span style="color:#f87171; font-weight:bold; margin-top:2px;">•</span><span class="text-sm leading-relaxed" style="color:#fca5a5;">${highlightKeywords(p.trim())}</span></li>`
+                ).join('') + '</ul>';
+            }
+
+            let html = `
+                <div class="mb-4">
+                    <h4 class="text-sm font-bold text-white mb-1">${esc(m.video_title || 'Unknown')}</h4>
+                    <div class="text-xs text-gray-400 mb-3">${esc(m.channel_name || 'Unknown')} • ${esc(m.duration || 'N/A')}</div>
+                    
+                    <div class="rounded-lg px-3 py-3 mb-3" style="background: rgba(239, 68, 68, 0.08); border:1px solid rgba(239,68,68,0.2);">
+                        <div class="text-[0.65rem] font-black uppercase tracking-widest mb-2 flex items-center gap-1" style="color:#f87171;">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            Primary Claim
+                        </div>
+                        ${formatAsBullets(data.primary_claim || 'No primary claim identified.')}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="h-px flex-1" style="background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);"></div>
+                    <span class="text-[0.65rem] font-black uppercase tracking-[0.15em] text-accent flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Counter Perspectives
+                    </span>
+                    <div class="h-px flex-1" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08));"></div>
+                </div>
+            `;
+
+            if (counters.length === 0) {
+                html += '<p class="text-sm text-gray-400">No counter-perspectives available.</p>';
+            } else {
+                html += '<div class="space-y-3">' + counters.map((c, i) => {
+                    const cfg = DIM[c.type] || DIM.Ethical;
+                    const why = c.why_it_matters || '';
+                    const ref = c.academic_ref || '';
+
+                    function formatCounterBullets(text) {
+                        if (!text) return '';
+                        const points = text.split(/[.!?]+/).filter(p => p.trim().length > 10);
+                        if (points.length <= 1) {
+                            return `<p class="text-sm leading-relaxed text-gray-200">${highlightKeywords(text)}</p>`;
+                        }
+                        return '<ul class="space-y-1">' + points.slice(0, 3).map(p => 
+                            `<li class="flex items-start gap-2"><span style="color:' + cfg.accent + '; font-weight:bold; margin-top:2px;">→</span><span class="text-sm leading-relaxed text-gray-200">${highlightKeywords(p.trim())}</span></li>`
+                        ).join('') + '</ul>';
+                    }
+
+                    return `
+                    <div class="rounded-xl overflow-hidden" style="background:${cfg.accentDim}; border:1px solid ${cfg.accentBdr};">
+                        <div class="h-0.5" style="background:${cfg.topBar};"></div>
+                        <div class="p-3">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 rounded flex items-center justify-center" style="background:${cfg.dotBg}; color:${cfg.accent};">
+                                    ${cfg.icon}
+                                </div>
+                                <span class="text-[0.6rem] font-black uppercase tracking-[0.15em]" style="color:${cfg.accent};">${esc(cfg.label)}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-white mb-2" style="color:${cfg.accent};">${esc(c.title)}</h3>
+                            <div class="mb-2">${formatCounterBullets(c.key_point)}</div>
+                            ${why ? `<div class="rounded px-2 py-2 mb-1" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);"><div class="text-[0.55rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1" style="color:${cfg.accent};"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>Why it matters</div><p class="text-xs leading-relaxed text-gray-300">${highlightKeywords(why)}</p></div>` : ''}
+                            ${ref ? `<p class="text-[0.6rem] text-gray-500 flex items-center gap-1 mt-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2 .9 2 2v4.2l1.81 1.03c.81.47 1.21 1.24 1.09 2.06z"/></svg> ${esc(ref)}</p>` : ''}
+                        </div>
+                    </div>`;
+                }).join('') + '</div>';
+            }
+
+            document.getElementById('yt-analysis-content').innerHTML = html;
+        }
+
+        // ─── Open Analysis Overlay ─────────────────────────────────
+        function openAnalysisOverlay() {
+            currentView = 'analysis';
+            document.getElementById('analysis-overlay').classList.add('open');
+            document.getElementById('analysis-backdrop').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ─── Close Analysis Overlay ─────────────────────────────────
+        function closeAnalysisOverlay() {
+            currentView = 'player';
+            document.getElementById('analysis-overlay').classList.remove('open');
+            document.getElementById('analysis-backdrop').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // ─── Toggle Mobile Drawer ───────────────────────────────────
+        function toggleMobileDrawer() {
+            const drawer = document.getElementById('mobileDrawer');
+            const btn = document.getElementById('mobileDrawerToggle');
+            
+            drawer.classList.toggle('open');
+            const isOpen = drawer.classList.contains('open');
+            btn.innerHTML = isOpen 
+                ? '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg> Hide Recommendations'
+                : '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg> View Recommendations';
         }
 
         // ─── Analyze ───────────────────────────────────────────────
@@ -1608,6 +3703,12 @@
 
         document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') analyze(); });
         document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchTopic(); });
+
+        // ─── Initial Load ────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load some default videos
+            ytQuickSearch('AI news');
+        });
     </script>
 
 </body>
