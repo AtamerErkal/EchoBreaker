@@ -98,7 +98,7 @@ IMAGES_DIR   = os.path.join(ROOT_DIR, "images")
 
 @app.get("/")
 async def serve_index():
-    return FileResponse(os.path.join(FRONTEND_DIR, "index_v6.html"))
+    return FileResponse(os.path.join(FRONTEND_DIR, "index_v8.html"))
 
 # Static files - mount AFTER specific routes
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
